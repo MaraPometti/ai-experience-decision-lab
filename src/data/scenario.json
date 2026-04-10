@@ -1,0 +1,727 @@
+{
+  "scenarioId": "sme-ai-leadership-sim",
+  "scenarioTitle": "AI Experience Decision Lab",
+  "scenarioSubtitle": "Designing an AI-enabled SME customer journey",
+  "description": "Participants make AI leadership decisions across seven stages of the SME customer journey. Each decision shapes customer experience, trust, adoption, and economic value — revealing how AI strategy creates or destroys ROI over time.",
+
+  "simulationConfig": {
+    "pilotDurationMonths": 12,
+    "startingBudget": 8000000,
+    "startingRevenueBase": 250000000,
+    "startingCustomerValueIndex": 100,
+    "startingCEI": 58,
+    "startingTrust": 62,
+    "startingAdoption": 40,
+    "currency": "GBP",
+    "maxRevenueUpliftPct": 10.0,
+    "maxCustomerValueIndex": 152,
+    "maxCEI": 122,
+    "maxTrust": 94,
+    "maxAdoption": 81
+  },
+
+  "kpiWeights": {
+    "revenue": 0.30,
+    "customerValue": 0.25,
+    "cei": 0.15,
+    "trust": 0.15,
+    "adoption": 0.10,
+    "budgetDiscipline": 0.05
+  },
+
+  "journeyStages": [
+    "Acquisition",
+    "Onboarding",
+    "Activation",
+    "Engagement",
+    "Expansion",
+    "Retention",
+    "Loyalty"
+  ],
+
+  "baselinePath": [10, 18, 22, 24, 22, 18, 15],
+  "bestPath":     [22, 38, 50, 60, 70, 80, 93],
+  "worstPath":    [ 6,  9, 10, 11,  9,  3,  2],
+
+  "rounds": [
+    {
+      "id": 1,
+      "stageIndex": 0,
+      "stage": "Acquisition",
+      "title": "How should AI shape SME acquisition — and at what cost?",
+      "prompt": "The bank wants to use AI to improve acquisition campaign performance for SME customers. The debate is between full AI enrichment across all targets, selective personalisation of high-value segments, and preserving the existing rules-based system. Budget and downstream trust implications differ significantly.",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Full AI enrichment: generate bespoke, business-signal-driven content for every SME target",
+          "pathImpact": [8, 4, 1, -1, -2, -2, -1],
+          "scoreImpact": { "cei": 5, "trust": 2, "cost": -5, "retention": 0 },
+          "businessImpact": {
+            "aiSpend": 1200000,
+            "budgetDelta": -1200000,
+            "revenueLiftPct": 0.5,
+            "revenueDelta": 1200000,
+            "customerValueDelta": 3,
+            "ceiDelta": 5,
+            "trustDelta": 2,
+            "adoptionDelta": 3,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "weak",
+            "trust": "moderate",
+            "adoption": "moderate"
+          },
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "B",
+            "reason": "Better experience than C, but spends £300K more than B to deliver materially weaker revenue efficiency."
+          },
+          "explanation": "Full AI enrichment generates campaign signals but concentrates £1.2M of budget on a touchpoint with inherently low CLV. Conversion lifts at acquisition, but relevance fatigue and over-indexing on volume means the lift does not compound well. The economics are weak: high spend, modest revenue, with downstream drag from customers who were acquired but not well-suited. Compare with Option B, which achieves better revenue per pound of AI spend by concentrating investment on high-propensity segments."
+        },
+        {
+          "id": "B",
+          "label": "Selective AI enrichment: target high-value SME segments with AI, lighter-touch for the rest",
+          "pathImpact": [12, 5, 3, 2, 1, 1, 1],
+          "scoreImpact": { "cei": 6, "trust": 3, "cost": -3, "retention": 1 },
+          "businessImpact": {
+            "aiSpend": 900000,
+            "budgetDelta": -900000,
+            "revenueLiftPct": 0.8,
+            "revenueDelta": 2000000,
+            "customerValueDelta": 5,
+            "ceiDelta": 6,
+            "trustDelta": 3,
+            "adoptionDelta": 5,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "Stronger revenue efficiency than A at lower cost, and meaningfully better than C on every dimension that matters downstream."
+          },
+          "explanation": "Selective AI enrichment focuses spend where it converts — high-intent SME segments with business signals that AI can read reliably. At £0.9M, this is the most cost-efficient acquisition option: it delivers stronger revenue uplift than Option A and creates a measurably better customer from day one. The experience benefit carries clearly into onboarding and activation. This is not a compromise — it is capital discipline applied to AI."
+        },
+        {
+          "id": "C",
+          "label": "Preserve legacy rules-based campaign targeting — no AI personalisation",
+          "pathImpact": [-4, -3, -2, -1, -1, -1, -1],
+          "scoreImpact": { "cei": 1, "trust": 0, "cost": 1, "retention": -1 },
+          "businessImpact": {
+            "aiSpend": 200000,
+            "budgetDelta": -200000,
+            "revenueLiftPct": 0.2,
+            "revenueDelta": 500000,
+            "customerValueDelta": 1,
+            "ceiDelta": 1,
+            "trustDelta": 0,
+            "adoptionDelta": 1,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "moderate",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Preserves £700K versus Option B but forfeits £1.5M in revenue and a weakened starting position that suppresses every downstream stage."
+          },
+          "explanation": "Preserving the legacy rules-based system avoids AI spend but forfeits competitive advantage at the front door. The pool of acquired customers is weaker, and the drag compounds across every downstream stage. Budget is preserved, but at the cost of starting the journey from a weakened position. At scale, the foregone revenue over 12 months significantly outweighs the £200K saving."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "stageIndex": 1,
+      "stage": "Onboarding",
+      "title": "How much should AI automate SME onboarding?",
+      "prompt": "The onboarding journey is a high-trust moment for new SME customers. The team must choose between full synchronous automation with no human fallback, a guided AI-supported flow with transparency and human backup, or maintaining the existing manual process. The downstream effects of this decision are the most consequential in the simulation.",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Fully automated synchronous onboarding — AI handles everything, no human escalation",
+          "pathImpact": [0, 6, -4, -7, -5, -5, -4],
+          "scoreImpact": { "cei": -2, "trust": -6, "cost": 3, "retention": -2 },
+          "businessImpact": {
+            "aiSpend": 1000000,
+            "budgetDelta": -1000000,
+            "revenueLiftPct": -0.5,
+            "revenueDelta": -1200000,
+            "customerValueDelta": -4,
+            "ceiDelta": -2,
+            "trustDelta": -6,
+            "adoptionDelta": -2,
+            "retentionDelta": -2
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "negative",
+            "trust": "negative",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Comparable spend to B but produces net negative revenue — the trust destruction converts a £1M AI investment into a £1.2M loss."
+          },
+          "explanation": "Fully automated synchronous onboarding completes the process quickly and consumes £1.0M of budget, but opaqueness in a high-trust moment creates a severe and lasting trust deficit. SME customers who feel processed rather than served disengage materially through activation, engagement, and beyond. The short-term completion rate improvement reverses into £1.2M of net revenue loss. In financial services, trust is a compounding asset — and this option spends it."
+        },
+        {
+          "id": "B",
+          "label": "Guided AI onboarding with transparency, clear rationale, and human support when needed",
+          "pathImpact": [0, 15, 11, 9, 7, 6, 6],
+          "scoreImpact": { "cei": 9, "trust": 6, "cost": -1, "retention": 3 },
+          "businessImpact": {
+            "aiSpend": 1100000,
+            "budgetDelta": -1100000,
+            "revenueLiftPct": 1.4,
+            "revenueDelta": 3500000,
+            "customerValueDelta": 8,
+            "ceiDelta": 9,
+            "trustDelta": 6,
+            "adoptionDelta": 7,
+            "retentionDelta": 3
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "At comparable spend to A, it delivers £4.7M more in revenue, stronger trust, and carries its benefit visibly through every stage to Loyalty."
+          },
+          "explanation": "Guided AI onboarding — transparent steps, clear rationale, human support available — is the highest-propagation decision in the simulation. At £1.1M, the spend is comparable to Option A, but the outcome is categorically better: £3.5M in projected revenue uplift, strong trust formation, and measurable gains across every subsequent stage. This is where AI earns its role as an enabler rather than a replacement."
+        },
+        {
+          "id": "C",
+          "label": "Maintain manual onboarding with static digital forms — no AI involvement",
+          "pathImpact": [0, -6, -5, -4, -3, -2, -2],
+          "scoreImpact": { "cei": -1, "trust": -1, "cost": 0, "retention": 0 },
+          "businessImpact": {
+            "aiSpend": 150000,
+            "budgetDelta": -150000,
+            "revenueLiftPct": -0.4,
+            "revenueDelta": -1000000,
+            "customerValueDelta": -1,
+            "ceiDelta": -1,
+            "trustDelta": -1,
+            "adoptionDelta": -1,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "negative",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Saves £950K versus B but embeds a fragmented experience at the most formative stage, costing roughly £4.5M in foregone downstream revenue."
+          },
+          "explanation": "Retaining manual digital forms keeps AI spend near zero but embeds a fragmented experience at the most formative stage of the customer relationship. The drag begins immediately and does not self-correct. The cost saving of £0.95M versus Option B translates into a revenue shortfall of approximately £4.5M over the simulation — making this the most expensive false economy in the journey."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "stageIndex": 2,
+      "stage": "Activation",
+      "title": "How should AI guide customers through first use?",
+      "prompt": "Once onboarded, the SME customer needs to activate their services and establish working patterns. The team is choosing between frontier model inference for maximum guidance quality, a cached contextual guidance system that refreshes on behavioural signals, or a static checklist approach. The cost differential between options is significant.",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Frontier model: fresh inference every session for maximum guidance quality",
+          "pathImpact": [0, 0, 9, 3, -2, -3, -2],
+          "scoreImpact": { "cei": 5, "trust": 2, "cost": -6, "retention": 0 },
+          "businessImpact": {
+            "aiSpend": 1600000,
+            "budgetDelta": -1600000,
+            "revenueLiftPct": 0.5,
+            "revenueDelta": 1200000,
+            "customerValueDelta": 4,
+            "ceiDelta": 5,
+            "trustDelta": 2,
+            "adoptionDelta": 4,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "weak",
+            "trust": "moderate",
+            "adoption": "moderate"
+          },
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "B",
+            "reason": "Better activation quality than C, but spends £0.9M more than B to generate £1.3M less in revenue — a marginal quality premium at a disproportionate cost."
+          },
+          "explanation": "Frontier model inference per session delivers maximum guidance quality but at £1.6M — more than double the cost of Option B. The relevance premium is real but marginal: most activation decisions do not require frontier-model reasoning. The economics deteriorate sharply, and engagement fatigue creates visible drag by the Expansion stage. This is a technology preference dressed up as a strategy."
+        },
+        {
+          "id": "B",
+          "label": "Cached contextual guidance: AI generates when signals change, caches otherwise",
+          "pathImpact": [0, 0, 14, 9, 6, 4, 3],
+          "scoreImpact": { "cei": 8, "trust": 4, "cost": -1, "retention": 2 },
+          "businessImpact": {
+            "aiSpend": 700000,
+            "budgetDelta": -700000,
+            "revenueLiftPct": 1.0,
+            "revenueDelta": 2500000,
+            "customerValueDelta": 6,
+            "ceiDelta": 8,
+            "trustDelta": 4,
+            "adoptionDelta": 6,
+            "retentionDelta": 2
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "Delivers stronger revenue, better trust, and preserves over £900K more budget than A — the best revenue-per-pound-of-AI-spend in this round."
+          },
+          "explanation": "Cached contextual guidance refreshed when behavioural signals change is the right architecture for activation at scale. At £0.7M, it delivers the highest revenue efficiency in this round: £2.5M in uplift against costs that preserve budget for later stages where AI spend creates greater leverage. Trust builds because guidance feels relevant without being intrusive. The momentum created here carries visibly into Engagement."
+        },
+        {
+          "id": "C",
+          "label": "Static onboarding checklist — no AI-driven guidance",
+          "pathImpact": [0, 0, -5, -4, -2, -2, -1],
+          "scoreImpact": { "cei": -3, "trust": -1, "cost": 1, "retention": -1 },
+          "businessImpact": {
+            "aiSpend": 100000,
+            "budgetDelta": -100000,
+            "revenueLiftPct": -0.4,
+            "revenueDelta": -1000000,
+            "customerValueDelta": -2,
+            "ceiDelta": -3,
+            "trustDelta": -1,
+            "adoptionDelta": -2,
+            "retentionDelta": -1
+          },
+          "tradeoffProfile": {
+            "experience": "negative",
+            "economics": "negative",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Saves £600K versus B but costs £3.5M in foregone revenue — unguided customers activate slowly and never fully recover their engagement momentum."
+          },
+          "explanation": "A static checklist leaves the customer to navigate the service alone. The spend is negligible, but the experience failure compounds: unguided SMEs activate slowly, engage less deeply, and generate materially lower lifetime value. The £1M revenue loss in this round understates the cumulative effect — the disengagement carries through every stage that follows."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "stageIndex": 3,
+      "stage": "Engagement",
+      "title": "How much real-time AI intelligence should drive ongoing engagement?",
+      "prompt": "Day-to-day engagement is where AI can create the most persistent value — or the most visible overreach. The team must choose between full real-time LLM monitoring of every interaction, hybrid rules-plus-LLM orchestration, or passive weekly AI summaries. The trust implications of each approach differ sharply.",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Full real-time LLM monitoring: every interaction analysed and responded to",
+          "pathImpact": [0, 0, 0, 8, 6, -6, -8],
+          "scoreImpact": { "cei": 6, "trust": 1, "cost": -7, "retention": -3 },
+          "businessImpact": {
+            "aiSpend": 1700000,
+            "budgetDelta": -1700000,
+            "revenueLiftPct": 0.4,
+            "revenueDelta": 1000000,
+            "customerValueDelta": 4,
+            "ceiDelta": 6,
+            "trustDelta": 1,
+            "adoptionDelta": 3,
+            "retentionDelta": -3
+          },
+          "tradeoffProfile": {
+            "experience": "moderate",
+            "economics": "weak",
+            "trust": "low",
+            "adoption": "moderate"
+          },
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "B",
+            "reason": "Short-term engagement is better than C, but the trust erosion means the late-stage path deteriorates severely — and at £800K more than B."
+          },
+          "explanation": "Full real-time LLM monitoring creates impressive engagement metrics short-term, but at £1.7M it is among the most expensive options in the simulation. More critically, customers who feel under constant AI surveillance disengage: trust erodes, and the Retention and Loyalty stages take a severe hit. The short-term revenue of £1M reverses into structural losses that persist to the end of the journey. Real-time AI intelligence is powerful — applied without restraint, it becomes a liability."
+        },
+        {
+          "id": "B",
+          "label": "Hybrid orchestration: rules handle routine interactions, LLM escalates for complexity",
+          "pathImpact": [0, 0, 0, 16, 14, 12, 10],
+          "scoreImpact": { "cei": 10, "trust": 5, "cost": -1, "retention": 4 },
+          "businessImpact": {
+            "aiSpend": 900000,
+            "budgetDelta": -900000,
+            "revenueLiftPct": 1.6,
+            "revenueDelta": 4000000,
+            "customerValueDelta": 9,
+            "ceiDelta": 10,
+            "trustDelta": 5,
+            "adoptionDelta": 7,
+            "retentionDelta": 4
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "Delivers four times the revenue of A at nearly half the cost, with significantly stronger trust preservation and a compounding effect that carries through Loyalty."
+          },
+          "explanation": "Hybrid orchestration — rules handling routine interactions, LLM escalating for genuine complexity — is both the most economical and most effective engagement architecture. At £0.9M, it delivers £4M in revenue uplift, the strongest trust preservation in the round, and a compounding effect that sustains through Expansion and Loyalty. The lesson: AI leverage comes from intelligent routing, not blanket deployment."
+        },
+        {
+          "id": "C",
+          "label": "Passive weekly AI summaries — no real-time intelligence or proactive guidance",
+          "pathImpact": [0, 0, 0, -4, -4, -3, -2],
+          "scoreImpact": { "cei": -2, "trust": 0, "cost": 1, "retention": 0 },
+          "businessImpact": {
+            "aiSpend": 150000,
+            "budgetDelta": -150000,
+            "revenueLiftPct": -0.6,
+            "revenueDelta": -1500000,
+            "customerValueDelta": -3,
+            "ceiDelta": -2,
+            "trustDelta": 0,
+            "adoptionDelta": -2,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "negative",
+            "economics": "negative",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Saves £750K versus B but costs £5.5M in foregone revenue — passive intelligence at the highest-leverage stage of the journey is not budget discipline, it is value destruction."
+          },
+          "explanation": "Passive weekly summaries preserve budget but abandon the customer at the moment of highest AI leverage. The £1.5M revenue loss in this round is the direct result of under-indexing on intelligence when the customer most needs it. The disengagement compounds into Expansion and Retention. Budget discipline that does not distinguish between wasteful spend and value-creating spend is not discipline — it is attrition."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "stageIndex": 4,
+      "stage": "Expansion",
+      "title": "What should power AI-enabled growth recommendations?",
+      "prompt": "The customer is active. The bank wants to use AI to identify and convert expansion opportunities across products, credit, and services. The question is whether to invest in a custom fine-tuned model on proprietary transaction data, use a well-configured API plus RAG layer with behavioural context, or rely on existing rules-based recommendation logic.",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Custom fine-tuned model trained on the bank's SME transaction data",
+          "pathImpact": [0, 0, 0, 0, 8, -2, -4],
+          "scoreImpact": { "cei": 5, "trust": 1, "cost": -8, "retention": -1 },
+          "businessImpact": {
+            "aiSpend": 1900000,
+            "budgetDelta": -1900000,
+            "revenueLiftPct": 1.0,
+            "revenueDelta": 2500000,
+            "customerValueDelta": 5,
+            "ceiDelta": 5,
+            "trustDelta": 1,
+            "adoptionDelta": 3,
+            "retentionDelta": -1
+          },
+          "tradeoffProfile": {
+            "experience": "moderate",
+            "economics": "weak",
+            "trust": "low",
+            "adoption": "moderate"
+          },
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "B",
+            "reason": "Better expansion performance than C short-term, but the fine-tuned model's commercial orientation introduces recommendation bias that customers detect — trust slips and the late-stage path suffers."
+          },
+          "explanation": "A custom fine-tuned model on the bank's SME transaction data is technically impressive but economically unjustifiable at £1.9M for this use case. The marginal quality improvement over a well-configured API and RAG layer is not proportionate to the cost differential. More critically, the model's commercial orientation introduces subtle bias in recommendations that customers detect: trust slips, and the late-stage path suffers. This is an infrastructure decision presented as a strategy."
+        },
+        {
+          "id": "B",
+          "label": "API + RAG + behavioural context: contextual recommendations grounded in customer signals",
+          "pathImpact": [0, 0, 0, 0, 20, 16, 14],
+          "scoreImpact": { "cei": 11, "trust": 4, "cost": -2, "retention": 4 },
+          "businessImpact": {
+            "aiSpend": 1200000,
+            "budgetDelta": -1200000,
+            "revenueLiftPct": 2.0,
+            "revenueDelta": 5000000,
+            "customerValueDelta": 9,
+            "ceiDelta": 11,
+            "trustDelta": 4,
+            "adoptionDelta": 6,
+            "retentionDelta": 4
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "Delivers twice the revenue of A at £700K less cost, with stronger trust and the largest single-stage path uplift in the simulation."
+          },
+          "explanation": "API plus RAG plus behavioural context is the winning architecture for expansion. At £1.2M — £700K less than Option A — it delivers £5M in revenue uplift: the largest single-stage return in the simulation. Contextual recommendations grounded in real customer signals convert at significantly higher rates. Trust is preserved because recommendations feel earned rather than pushed. This is what AI-enabled growth actually looks like."
+        },
+        {
+          "id": "C",
+          "label": "Static rules-based recommendation engine — no AI inference",
+          "pathImpact": [0, 0, 0, 0, -3, -3, -3],
+          "scoreImpact": { "cei": -4, "trust": 0, "cost": 1, "retention": -1 },
+          "businessImpact": {
+            "aiSpend": 200000,
+            "budgetDelta": -200000,
+            "revenueLiftPct": -0.6,
+            "revenueDelta": -1500000,
+            "customerValueDelta": -4,
+            "ceiDelta": -4,
+            "trustDelta": 0,
+            "adoptionDelta": -2,
+            "retentionDelta": -1
+          },
+          "tradeoffProfile": {
+            "experience": "negative",
+            "economics": "negative",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Saves £1M versus B but consistently misses expansion signals — at scale, the foregone revenue across one million customers is not a rounding error."
+          },
+          "explanation": "Static rules-based recommendation logic is the cheapest option at £0.2M but consistently misses the customer at their moment of readiness. The £1.5M revenue loss is the direct consequence of signals going unread. At scale — over one million SME customers — the foregone expansion revenue is not a rounding error. The question is not whether to use AI here, but whether to use it well."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "stageIndex": 5,
+      "stage": "Retention",
+      "title": "How should AI intervene when SME customers show risk signals?",
+      "prompt": "The bank's systems are detecting early signals that some SME customers may disengage or face financial difficulty. The team must decide how much autonomy the AI has in responding — acting independently without customer visibility, supporting a human-in-the-loop process, or waiting for the customer to raise a problem directly.",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Autonomous AI intervention: AI acts on churn signals independently, without customer explanation",
+          "pathImpact": [0, 0, 0, 0, 0, 8, -6],
+          "scoreImpact": { "cei": 1, "trust": -5, "cost": 2, "retention": 1 },
+          "businessImpact": {
+            "aiSpend": 1400000,
+            "budgetDelta": -1400000,
+            "revenueLiftPct": 0.3,
+            "revenueDelta": 800000,
+            "customerValueDelta": -3,
+            "ceiDelta": 1,
+            "trustDelta": -5,
+            "adoptionDelta": 0,
+            "retentionDelta": 1
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "weak",
+            "trust": "negative",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Recovers some short-term retention but the trust destruction converts a marginal gain into a severe Loyalty-stage collapse — the retention improvement fully reverses."
+          },
+          "explanation": "Autonomous AI intervention recovers some immediate retention metrics at a cost of £1.4M, but opaque action in a sensitive moment — when an SME customer may be under financial pressure — causes a trust collapse that is visible and measurable. The retention gain fully reverses into a loyalty loss. In financial services, autonomous action without consent is not a retention strategy — it is a relationship liability."
+        },
+        {
+          "id": "B",
+          "label": "Human-in-the-loop AI support: AI detects risk early, human approves, customer sees the action",
+          "pathImpact": [0, 0, 0, 0, 0, 23, 21],
+          "scoreImpact": { "cei": 11, "trust": 5, "cost": -1, "retention": 6 },
+          "businessImpact": {
+            "aiSpend": 1000000,
+            "budgetDelta": -1000000,
+            "revenueLiftPct": 1.6,
+            "revenueDelta": 4000000,
+            "customerValueDelta": 8,
+            "ceiDelta": 11,
+            "trustDelta": 5,
+            "adoptionDelta": 5,
+            "retentionDelta": 6
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "At £400K less than A, it delivers five times the revenue and the strongest trust score in the simulation — early detection with human oversight is both the cheapest and most effective option."
+          },
+          "explanation": "Human-in-the-loop AI support is the highest-leverage decision in the simulation. Early risk detection, transparent support options, and human approval before action creates a retention outcome that also strengthens trust. At £1M, it delivers £4M in revenue uplift and the strongest loyalty trajectory in the journey. A retained SME customer who trusts the bank is worth multiples of one who was kept through opaque intervention."
+        },
+        {
+          "id": "C",
+          "label": "Reactive manual handling: respond when the customer raises a problem or shows clear churn signals",
+          "pathImpact": [0, 0, 0, 0, 0, -4, -2],
+          "scoreImpact": { "cei": -5, "trust": -2, "cost": 1, "retention": -4 },
+          "businessImpact": {
+            "aiSpend": 100000,
+            "budgetDelta": -100000,
+            "revenueLiftPct": -0.8,
+            "revenueDelta": -2000000,
+            "customerValueDelta": -4,
+            "ceiDelta": -5,
+            "trustDelta": -2,
+            "adoptionDelta": -2,
+            "retentionDelta": -4
+          },
+          "tradeoffProfile": {
+            "experience": "negative",
+            "economics": "negative",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Saves £900K versus B but guarantees the intervention arrives too late — the £2M revenue loss and trust erosion far exceed the cost saving at any scale."
+          },
+          "explanation": "Reactive manual handling preserves budget but guarantees the intervention arrives too late. By the time a customer raises a concern or shows clear churn signals, the window for low-cost recovery has closed. The £2M revenue loss in this round is the direct consequence of a response cadence that does not match the pace of SME business risk. At scale, the compounding effect of late intervention across one million customers is material."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "stageIndex": 6,
+      "stage": "Loyalty",
+      "title": "How should AI shape the long-term SME banking relationship?",
+      "prompt": "The SME customer has been active for several months and has formed a view of the bank's AI experience. The final strategic decision is how AI shapes the ongoing relationship: optimise commercially for short-term extraction, build genuine business-partner value, or deploy templated personalisation at scale that mimics but does not deliver genuine intelligence.",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Extractive commercial AI: optimise every interaction for bank revenue, not customer outcomes",
+          "pathImpact": [0, 0, 0, 0, 0, 0, 6],
+          "scoreImpact": { "cei": 2, "trust": -4, "cost": -4, "retention": -2 },
+          "businessImpact": {
+            "aiSpend": 1000000,
+            "budgetDelta": -1000000,
+            "revenueLiftPct": 0.5,
+            "revenueDelta": 1200000,
+            "customerValueDelta": -3,
+            "ceiDelta": 2,
+            "trustDelta": -4,
+            "adoptionDelta": -1,
+            "retentionDelta": -2
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "weak",
+            "trust": "negative",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "B",
+            "reason": "Generates more short-term revenue than C, but the trust destruction and advocacy collapse mean the long-term relationship value destruction far exceeds the marginal gain."
+          },
+          "explanation": "Extractive commercial AI generates a surface-level revenue uplift of £1.2M, but at the cost of relationship quality. SME customers are commercially sophisticated: they recognise when a banking relationship is structured around extraction rather than partnership. Trust drops sharply, advocacy collapses, and the long-term relationship value destruction far exceeds the short-term gain. AI applied in service of commercial extraction is a strategy that wins a round and loses the customer."
+        },
+        {
+          "id": "B",
+          "label": "Trusted business-partner AI: use AI to serve SME outcomes, not just bank revenue targets",
+          "pathImpact": [0, 0, 0, 0, 0, 0, 23],
+          "scoreImpact": { "cei": 9, "trust": 5, "cost": -1, "retention": 4 },
+          "businessImpact": {
+            "aiSpend": 800000,
+            "budgetDelta": -800000,
+            "revenueLiftPct": 1.6,
+            "revenueDelta": 4000000,
+            "customerValueDelta": 7,
+            "ceiDelta": 9,
+            "trustDelta": 5,
+            "adoptionDelta": 5,
+            "retentionDelta": 4
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "At £200K less than A, it delivers more than three times the revenue, the strongest trust score, and closes the simulation at its highest possible customer value."
+          },
+          "explanation": "Positioning AI as a genuine business partner — using it to serve SME outcomes, not just bank revenue targets — is the decision that closes the simulation at its highest value. At £0.8M, it delivers £4M in revenue uplift, the strongest loyalty trajectory, and a trust level that creates genuine advocacy. The thesis of the simulation is confirmed here: AI creates ROI not through extraction, but through the relationship quality that drives adoption, retention, and compounding lifetime value."
+        },
+        {
+          "id": "C",
+          "label": "Templated personalisation at scale: rules-based system presented as AI personalisation",
+          "pathImpact": [0, 0, 0, 0, 0, 0, -2],
+          "scoreImpact": { "cei": 2, "trust": -3, "cost": -1, "retention": 0 },
+          "businessImpact": {
+            "aiSpend": 400000,
+            "budgetDelta": -400000,
+            "revenueLiftPct": 0.2,
+            "revenueDelta": 500000,
+            "customerValueDelta": -1,
+            "ceiDelta": 2,
+            "trustDelta": -3,
+            "adoptionDelta": 1,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "moderate",
+            "trust": "negative",
+            "adoption": "low"
+          },
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Saves £400K versus B but delivers £3.5M less in revenue — SME customers who have experienced genuine AI intelligence will notice the difference, and trust erodes accordingly."
+          },
+          "explanation": "Templated personalisation dressed up as AI is detectable. SME customers who have experienced genuine AI-guided support will notice when interactions shift to generic templates with a conversational wrapper. Trust erodes, the relationship stagnates, and the modest revenue uplift of £0.5M masks a missed compounding opportunity. Budget discipline is preserved, but the long-term value trajectory of a customer who knows they are receiving simulated personalisation is structurally weaker."
+        }
+      ]
+    }
+  ]
+}
