@@ -1,0 +1,206 @@
+{
+  "scenarioId": "sme-ai-leadership-sim",
+  "scenarioTitle": "AI Experience Decision Lab",
+  "scenarioSubtitle": "Designing an AI-enabled SME customer journey",
+  "description": "Participants make AI leadership decisions across the customer journey and see how those choices affect customer economic value over time.",
+  "journeyStages": [
+    "Acquisition",
+    "Onboarding",
+    "Activation",
+    "Engagement",
+    "Expansion",
+    "Retention",
+    "Loyalty"
+  ],
+  "baselinePath": [10, 18, 22, 24, 22, 18, 15],
+  "bestPath":     [22, 38, 52, 68, 78, 88, 92],
+  "worstPath":    [ 6,  8, 10, 11,  7,  3,  2],
+  "rounds": [
+    {
+      "id": 1,
+      "stageIndex": 0,
+      "stage": "Acquisition",
+      "title": "How should we use AI in SME acquisition emails?",
+      "prompt": "The team wants to improve campaign performance for SME customers. How much AI personalization should be applied at the acquisition stage?",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Hyper-personalize every email with agent-generated content for each SME",
+          "pathImpact": [6, 3, 0, -1, -2, -2, -1],
+          "scoreImpact": { "cei": 4, "trust": 2, "cost": -7, "retention": 0 },
+          "explanation": "This increases relevance, but acquisition email is a relatively low-value touchpoint. The added orchestration and API cost reduce economic efficiency and create slight downstream drag."
+        },
+        {
+          "id": "B",
+          "label": "Use AI to personalize selected content and high-value moments only",
+          "pathImpact": [8, 5, 3, 2, 1, 1, 1],
+          "scoreImpact": { "cei": 8, "trust": 3, "cost": -2, "retention": 1 },
+          "explanation": "This creates a better balance between relevance and cost. It improves acquisition and carries a meaningful uplift into onboarding, activation, and beyond."
+        },
+        {
+          "id": "C",
+          "label": "Keep generic rule-based campaign software",
+          "pathImpact": [-2, -3, -2, -1, -1, -1, -1],
+          "scoreImpact": { "cei": 0, "trust": 0, "cost": 1, "retention": -1 },
+          "explanation": "Lower relevance weakens conversion immediately and suppresses value creation across the entire customer journey."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "stageIndex": 1,
+      "stage": "Onboarding",
+      "title": "How should the AI support onboarding?",
+      "prompt": "The bank wants to streamline onboarding. Should it fully automate, selectively guide, or preserve traditional flows?",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Fully automate onboarding with minimal explanation and no human escalation",
+          "pathImpact": [0, 6, -5, -8, -6, -6, -5],
+          "scoreImpact": { "cei": -2, "trust": -4, "cost": 3, "retention": -2 },
+          "explanation": "Onboarding completes quickly, but opacity in a high-trust moment destroys confidence. The short-term onboarding gain reverses into a severe and lasting drop across activation, engagement, and retention."
+        },
+        {
+          "id": "B",
+          "label": "Use guided AI onboarding with transparency and human support when needed",
+          "pathImpact": [0, 12, 10, 9, 7, 6, 6],
+          "scoreImpact": { "cei": 9, "trust": 5, "cost": -1, "retention": 3 },
+          "explanation": "This reduces friction while preserving confidence and control. The strong onboarding experience carries visibly all the way through to loyalty — the highest-propagation decision in the simulation."
+        },
+        {
+          "id": "C",
+          "label": "Keep mostly manual onboarding with static digital forms",
+          "pathImpact": [0, -5, -4, -3, -2, -2, -2],
+          "scoreImpact": { "cei": -2, "trust": -1, "cost": 0, "retention": 0 },
+          "explanation": "Avoiding AI avoids risk, but leaves a fragmented experience in place. The drag shows clearly at onboarding and compounds across every downstream stage."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "stageIndex": 2,
+      "stage": "Activation",
+      "title": "How proactive should the AI be in helping the customer get started?",
+      "prompt": "Once onboarded, the SME customer needs help using the service. What role should AI play in activation?",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Push aggressive next-best actions immediately across all users",
+          "pathImpact": [0, 0, 7, 2, -3, -4, -3],
+          "scoreImpact": { "cei": 1, "trust": -2, "cost": -1, "retention": -2 },
+          "explanation": "Activation metrics improve in the short term, but overly aggressive prompts erode trust and create a noticeable reversal through engagement and retention."
+        },
+        {
+          "id": "B",
+          "label": "Use AI to recommend contextual next steps based on behavior and needs",
+          "pathImpact": [0, 0, 10, 8, 5, 3, 3],
+          "scoreImpact": { "cei": 8, "trust": 3, "cost": -1, "retention": 2 },
+          "explanation": "This creates strong activation momentum without overwhelming the customer. The improvement compounds clearly into engagement and loyalty."
+        },
+        {
+          "id": "C",
+          "label": "Let customers figure it out themselves using menus and dashboards",
+          "pathImpact": [0, 0, -5, -4, -2, -2, -1],
+          "scoreImpact": { "cei": -4, "trust": -1, "cost": 1, "retention": -1 },
+          "explanation": "Low guidance causes a visible activation slump and weakens engagement meaningfully. The experience never fully recovers its momentum."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "stageIndex": 3,
+      "stage": "Engagement",
+      "title": "How much autonomy should the AI have in ongoing support?",
+      "prompt": "The bank is designing the day-to-day AI experience. How much autonomy should the AI agent have during engagement?",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Let the AI act autonomously across most interactions and recommendations",
+          "pathImpact": [0, 0, 0, 7, 5, -7, -9],
+          "scoreImpact": { "cei": 1, "trust": -3, "cost": 2, "retention": -3 },
+          "explanation": "Autonomy improves engagement metrics in the short term, but the trust erosion is severe. The reversal at retention and loyalty is among the most dramatic in the simulation — a clear autonomy trap."
+        },
+        {
+          "id": "B",
+          "label": "Use AI for proactive guidance, with customer visibility and control over key actions",
+          "pathImpact": [0, 0, 0, 14, 12, 11, 9],
+          "scoreImpact": { "cei": 10, "trust": 5, "cost": -1, "retention": 4 },
+          "explanation": "The strongest engagement design: useful, proactive, and aligned with customer agency. The uplift at engagement is large and carries powerfully into expansion, retention, and loyalty."
+        },
+        {
+          "id": "C",
+          "label": "Keep AI passive and only surface information when explicitly requested",
+          "pathImpact": [0, 0, 0, -5, -5, -4, -3],
+          "scoreImpact": { "cei": -2, "trust": 0, "cost": 1, "retention": 0 },
+          "explanation": "The experience remains static and underuses AI at the moment it would create the most value. Engagement, expansion, and retention all take a compounding hit."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "stageIndex": 4,
+      "stage": "Expansion",
+      "title": "How should AI shape growth offers and recommendations?",
+      "prompt": "The SME is now an active customer. The bank wants to drive expansion through AI-enabled offers. What should it do?",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Use generic AI-generated upsell offers across the customer base",
+          "pathImpact": [0, 0, 0, 0, 6, -3, -5],
+          "scoreImpact": { "cei": 0, "trust": -1, "cost": -1, "retention": -1 },
+          "explanation": "Generic offers produce a visible expansion bump, but disconnected recommendations feel impersonal. The loyalty damage at the end of the journey is a clear consequence of trading relevance for scale."
+        },
+        {
+          "id": "B",
+          "label": "Use contextual AI recommendations tied to business signals, behavior, and likely needs",
+          "pathImpact": [0, 0, 0, 0, 18, 15, 13],
+          "scoreImpact": { "cei": 11, "trust": 4, "cost": -2, "retention": 4 },
+          "explanation": "This turns AI into a true growth partner. The expansion lift is the largest single-stage impact in the simulation, and it sustains strongly into retention and loyalty."
+        },
+        {
+          "id": "C",
+          "label": "Avoid proactive expansion recommendations and wait for the customer to ask",
+          "pathImpact": [0, 0, 0, 0, -5, -4, -4],
+          "scoreImpact": { "cei": -4, "trust": 0, "cost": 1, "retention": -1 },
+          "explanation": "Reactive expansion consistently misses the customer at the moment of readiness. The drag is visible at expansion and compounds into retention and loyalty."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "stageIndex": 5,
+      "stage": "Retention",
+      "title": "How should the AI respond to emerging risk and churn signals?",
+      "prompt": "The bank can see signals that some SME customers may struggle or disengage. How should AI respond?",
+      "bestOptionId": "B",
+      "options": [
+        {
+          "id": "A",
+          "label": "Let AI intervene automatically without customer explanation or review",
+          "pathImpact": [0, 0, 0, 0, 0, 7, -5],
+          "scoreImpact": { "cei": 0, "trust": -3, "cost": 2, "retention": 1 },
+          "explanation": "Automatic intervention recovers some retention, but opaque action in a sensitive moment seriously damages trust. The retention gain fully reverses into a loyalty loss — a clear autonomy-transparency trade-off."
+        },
+        {
+          "id": "B",
+          "label": "Use AI to detect risk early and offer transparent, actionable support options",
+          "pathImpact": [0, 0, 0, 0, 0, 20, 18],
+          "scoreImpact": { "cei": 12, "trust": 5, "cost": -1, "retention": 6 },
+          "explanation": "The highest-leverage decision in the simulation: early detection, relevant support, trust-preserving intervention. The impact on retention and loyalty is the most visible and consequential in the entire journey."
+        },
+        {
+          "id": "C",
+          "label": "Wait until the customer raises a problem or shows clear churn behavior",
+          "pathImpact": [0, 0, 0, 0, 0, -5, -4],
+          "scoreImpact": { "cei": -5, "trust": -1, "cost": 1, "retention": -4 },
+          "explanation": "Reactive handling means the intervention always arrives too late. The damage to retention and loyalty is immediate and clearly visible on the chart."
+        }
+      ]
+    }
+  ]
+}
