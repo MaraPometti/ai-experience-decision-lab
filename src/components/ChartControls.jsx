@@ -6,7 +6,7 @@ export default function ChartControls({ showBestPath, showWorstPath, onToggleBes
         onClick={onToggleBest}
       >
         <span className="toggle-dot dot-best" />
-        {showBestPath ? 'Hide Ideal AI Experience' : 'Show Ideal AI Experience'}
+        {showBestPath ? 'Hide Optimal AI Experience' : 'Show Optimal AI Experience'}
       </button>
       <button
         className={`chart-toggle toggle-worst ${showWorstPath ? 'active' : ''}`}

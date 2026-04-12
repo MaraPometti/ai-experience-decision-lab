@@ -58,13 +58,22 @@ export default function App() {
   const [kpis,                 setKpis]                 = useState({ ...INITIAL_KPIS })
   const [isComplete,           setIsComplete]           = useState(false)
   const [hasSimulationStarted, setHasSimulationStarted] = useState(false)
+  const [activeDetailPanel,    setActiveDetailPanel]    = useState(null)
+  const [showBaselineNote,     setShowBaselineNote]     = useState(false)
+  const [history,              setHistory]              = useState([])
 
   // ── display toggles (intentionally NOT reset by simulation) ───────────────
   const [showBestPath,  setShowBestPath]  = useState(true)
   const [showWorstPath, setShowWorstPath] = useState(false)
 
   const currentRound = isComplete ? null : rounds[currentRoundIndex]
-  const idealOption = currentRound?.options.find(option => option.id === currentRound.bestOptionId) || null
+
+  // Sort options by optionDisplayOrder if present, otherwise use data order
+  const displayedOptions = currentRound?.optionDisplayOrder
+    ? [...currentRound.options].sort(
+        (a, b) => currentRound.optionDisplayOrder.indexOf(a.id) - currentRound.optionDisplayOrder.indexOf(b.id)
+      )
+    : currentRound?.options ?? []
 
   // previewPath: roundStartPath + previewOption's pathImpact
   const previewPath =
@@ -80,10 +89,9 @@ export default function App() {
   const completedDecisionCount = currentRoundIndex + (selectedOption ? 1 : 0)
   const idealKpis = getIdealKpis(rounds, completedDecisionCount)
   const actualRevenueGap = Math.max(0, idealKpis.cumulativeRevenue - kpis.cumulativeRevenue)
-  const previewRevenueGap =
-    previewOption && idealOption
-      ? Math.max(0, idealOption.businessImpact.revenueDelta - previewOption.businessImpact.revenueDelta)
-      : 0
+
+  const cfRevenue = previewKpis?.cumulativeRevenue ?? null
+  const cfDelta   = cfRevenue != null ? cfRevenue - kpis.cumulativeRevenue : null
 
   // ── handlers ──────────────────────────────────────────────────────────────
 
@@ -116,6 +124,19 @@ export default function App() {
 
   function handleNextRound() {
     if (!selectedOption || isComplete) return
+
+    // Save completed round state so Previous can restore it
+    setHistory(prev => [...prev, {
+      currentRoundIndex,
+      livePath:       [...livePath],
+      roundStartPath: roundStartPath ? [...roundStartPath] : null,
+      kpis:           { ...kpis },
+      roundStartKpis: roundStartKpis ? { ...roundStartKpis } : null,
+      selectedOption,
+      explanation,
+      hasSimulationStarted,
+    }])
+
     const nextIndex = currentRoundIndex + 1
     if (nextIndex >= rounds.length) {
       setIsComplete(true)
@@ -127,6 +148,24 @@ export default function App() {
     setRoundStartKpis(null)
     setExplanation('')
     setRoundStartPath(null)
+    setActiveDetailPanel(null)
+  }
+
+  function handlePreviousRound() {
+    if (history.length === 0) return
+    const snap = history[history.length - 1]
+    setHistory(h => h.slice(0, -1))
+    setCurrentRoundIndex(snap.currentRoundIndex)
+    setLivePath(snap.livePath)
+    setRoundStartPath(snap.roundStartPath)
+    setKpis(snap.kpis)
+    setRoundStartKpis(snap.roundStartKpis)
+    setSelectedOption(snap.selectedOption)
+    setExplanation(snap.explanation)
+    setHasSimulationStarted(snap.hasSimulationStarted)
+    setPreviewOption(null)
+    setIsComplete(false)
+    setActiveDetailPanel(null)
   }
 
   function handleReset() {
@@ -139,8 +178,18 @@ export default function App() {
     setExplanation('')
     setKpis({ ...INITIAL_KPIS })
     setIsComplete(false)
-    setHasSimulationStarted(false)  // hides Class Decision Path again
+    setHasSimulationStarted(false)
+    setActiveDetailPanel(null)
+    setHistory([])
     // showBestPath / showWorstPath preserved intentionally
+  }
+
+  function fmtGBP(value) {
+    const abs = Math.abs(value)
+    const sign = value < 0 ? '−£' : '£'
+    if (abs >= 1_000_000) return sign + (abs / 1_000_000).toFixed(1) + 'm'
+    if (abs >= 1_000) return sign + Math.round(abs / 1_000) + 'k'
+    return sign + Math.round(abs)
   }
 
   // ── render ────────────────────────────────────────────────────────────────
@@ -179,7 +228,9 @@ export default function App() {
                   ].filter(Boolean).join(' ')}
                   title={stage}
                   aria-label={stage}
-                />
+                >
+                  <span className="top-journey-step-name">{stage}</span>
+                </span>
               )
             })}
           </div>
@@ -195,10 +246,14 @@ export default function App() {
             <>
               <div className="round-question">
                 <h2 className="round-title">{currentRound.title}</h2>
+                {currentRound.tradeoffTagline && (
+                  <p className="round-tradeoff-tagline">{currentRound.tradeoffTagline}</p>
+                )}
                 <p className="round-prompt">{currentRound.prompt}</p>
               </div>
               <OptionCards
-                options={currentRound.options}
+                options={displayedOptions}
+                bestOptionId={currentRound.bestOptionId}
                 selectedOption={selectedOption}
                 previewOption={previewOption}
                 onSelectOption={handleSelectOption}
@@ -226,6 +281,45 @@ export default function App() {
             onToggleBest={() => setShowBestPath(v => !v)}
             onToggleWorst={() => setShowWorstPath(v => !v)}
           />
+          <div className="chart-revenue-strip">
+            <div className="chart-revenue-card">
+              <span className="chart-revenue-label">
+                {previewKpis ? `Counterfactual — Option ${previewOption.id}` : 'Cumulative Revenue (£)'}
+              </span>
+              <span className={`chart-revenue-value ${(cfRevenue ?? kpis.cumulativeRevenue) >= 0 ? 'positive' : 'negative'}`}>
+                {fmtGBP(cfRevenue ?? kpis.cumulativeRevenue)}
+              </span>
+              {cfDelta != null && (
+                <span className={`chart-revenue-delta ${cfDelta >= 0 ? 'positive' : 'negative'}`}>
+                  {cfDelta === 0
+                    ? 'Same as your chosen path'
+                    : `${cfDelta > 0 ? '+' : ''}${fmtGBP(cfDelta)} vs your chosen path`}
+                </span>
+              )}
+            </div>
+            <div className="chart-revenue-card">
+              <span className="chart-revenue-label">Cumulative AI Costs (£)</span>
+              <span className="chart-revenue-value negative">
+                {fmtGBP(kpis.cumulativeAiSpend)}
+              </span>
+            </div>
+            <div className="chart-detail-actions">
+              <button
+                type="button"
+                className={`detail-toggle ${activeDetailPanel === 'insight' ? 'active' : ''}`}
+                onClick={() => setActiveDetailPanel(value => value === 'insight' ? null : 'insight')}
+              >
+                Decision Insight
+              </button>
+              <button
+                type="button"
+                className={`detail-toggle ${activeDetailPanel === 'kpis' ? 'active' : ''}`}
+                onClick={() => setActiveDetailPanel(value => value === 'kpis' ? null : 'kpis')}
+              >
+                KPI Detail
+              </button>
+            </div>
+          </div>
           <ValueChart
             stages={journeyStages}
             baselinePath={baselinePath}
@@ -237,40 +331,95 @@ export default function App() {
             showWorstPath={showWorstPath}
             previewPath={previewPath}
             actualRevenueGap={actualRevenueGap}
-            previewRevenueGap={previewRevenueGap}
           />
         </section>
 
-        {/* RIGHT: explanation area */}
-        <section className="col col-right">
-          <ExplanationPanel
-            explanation={explanation}
-            currentRound={currentRound}
-            currentRoundIndex={currentRoundIndex}
-            totalRounds={rounds.length}
-            livePath={livePath}
-            bestPath={bestPath}
-            kpis={kpis}
-            idealKpis={idealKpis}
-            simulationConfig={simulationConfig}
-            selectedOption={selectedOption}
-            previewOption={previewOption}
-          />
-          <ScorePanel
-            kpis={previewKpis || kpis}
-            actualKpis={kpis}
-            selectedOption={selectedOption}
-            previewOption={previewOption}
-            hasSimulationStarted={hasSimulationStarted}
-            simulationConfig={simulationConfig}
-          />
-        </section>
+        {activeDetailPanel && (
+          <>
+            <button
+              type="button"
+              className="detail-drawer-backdrop"
+              aria-label="Close detail panel"
+              onClick={() => setActiveDetailPanel(null)}
+            />
+            <section className="detail-drawer">
+            <div className="detail-drawer-head">
+              <h2 className="detail-drawer-title">
+                {activeDetailPanel === 'insight' ? 'Decision Insight' : 'Business KPIs'}
+              </h2>
+              <button
+                type="button"
+                className="detail-drawer-close"
+                onClick={() => setActiveDetailPanel(null)}
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="detail-drawer-body">
+              {activeDetailPanel === 'insight' ? (
+                <ExplanationPanel
+                  explanation={explanation}
+                  currentRound={currentRound}
+                  currentRoundIndex={currentRoundIndex}
+                  totalRounds={rounds.length}
+                  livePath={livePath}
+                  bestPath={bestPath}
+                  kpis={kpis}
+                  idealKpis={idealKpis}
+                  simulationConfig={simulationConfig}
+                  selectedOption={selectedOption}
+                  previewOption={previewOption}
+                />
+              ) : (
+                <ScorePanel
+                  kpis={previewKpis || kpis}
+                  actualKpis={kpis}
+                  selectedOption={selectedOption}
+                  previewOption={previewOption}
+                  hasSimulationStarted={hasSimulationStarted}
+                  simulationConfig={simulationConfig}
+                />
+              )}
+            </div>
+            </section>
+          </>
+        )}
 
       </main>
+
+      {/* ── Methodology (collapsible) ── */}
+      {showBaselineNote && (
+        <aside className="baseline-note baseline-note-expanded">
+          <span className="baseline-note-label">Baseline assumptions</span>
+          <span className="baseline-note-text">
+            Trust Index (62): mid-level trust typical of fragmented, non-personalised SME banking.
+          </span>
+          <span className="baseline-note-sep">·</span>
+          <span className="baseline-note-text">
+            Adoption Score (40%): consistent with industry patterns for low-engagement digital SME journeys.
+          </span>
+          <span className="baseline-note-sep">·</span>
+          <span className="baseline-note-text">
+            Customer Value Index (100): simulation index — 100 = starting point; rises or falls with decisions.
+          </span>
+          <span className="baseline-note-sep">·</span>
+          <span className="baseline-note-text">
+            Modelled assumptions for consistent benchmarking — not externally verified benchmarks.
+          </span>
+        </aside>
+      )}
 
       {/* ── Footer actions ── */}
       <footer className="app-footer">
         <div className="footer-actions">
+          <button
+            className="btn btn-secondary"
+            onClick={handlePreviousRound}
+            disabled={history.length === 0}
+          >
+            ← Previous
+          </button>
           <button
             className="btn btn-primary"
             onClick={handleNextRound}
@@ -279,12 +428,18 @@ export default function App() {
             Next Round →
           </button>
           {previewOption && (
-            <button className="btn btn-secondary" onClick={handleClearPreview}>
+            <button className="btn btn-secondary btn-subtle" onClick={handleClearPreview}>
               Hide Explanation
             </button>
           )}
-          <button className="btn btn-secondary" onClick={handleReset}>
+          <button className="btn btn-secondary btn-danger-subtle" onClick={handleReset}>
             Reset
+          </button>
+          <button
+            className={`btn btn-subtle methodology-toggle ${showBaselineNote ? 'active' : ''}`}
+            onClick={() => setShowBaselineNote(v => !v)}
+          >
+            Methodology
           </button>
         </div>
       </footer>

@@ -11,53 +11,35 @@ function fmtGBP(value) {
 function renderComparisonSummary(selectedOption, previewOption) {
   if (!selectedOption || !previewOption) return null
 
-  const selectedImpact = selectedOption.businessImpact
-  const previewImpact = previewOption.businessImpact
-  const revenueDelta = previewImpact.revenueDelta - selectedImpact.revenueDelta
-  const trustDelta = previewImpact.trustDelta - selectedImpact.trustDelta
-  const customerValueDelta = previewImpact.customerValueDelta - selectedImpact.customerValueDelta
-  const aiSpendDelta = previewImpact.aiSpend - selectedImpact.aiSpend
+  const s = selectedOption.businessImpact
+  const p = previewOption.businessImpact
 
-  const revenueComparison = revenueDelta === 0
-    ? 'the same revenue'
-    : revenueDelta > 0
-      ? `${fmtGBP(revenueDelta)} more revenue`
-      : `${fmtGBP(Math.abs(revenueDelta))} less revenue`
+  const revenueDelta    = p.revenueDelta - s.revenueDelta
+  const trustDelta      = p.trustDelta   - s.trustDelta
+  const aiSpendDelta    = p.aiSpend      - s.aiSpend
 
-  const trustComparison = trustDelta === 0
-    ? 'the same trust'
-    : trustDelta > 0
-      ? `${trustDelta} points more trust`
-      : `${Math.abs(trustDelta)} points less trust`
+  const fmt = (v, isSpend) => {
+    const sign = v > 0 ? '+' : '−'
+    return `${sign}${fmtGBP(Math.abs(v))}${isSpend ? ' AI cost' : ' revenue'}`
+  }
+  const fmtTrust = v => v === 0 ? 'No trust change' : `${v > 0 ? '+' : ''}${v} trust point${Math.abs(v) !== 1 ? 's' : ''}`
 
-  const customerValueComparison = customerValueDelta === 0
-    ? 'the same customer value'
-    : customerValueDelta > 0
-      ? `${customerValueDelta} points more customer value`
-      : `${Math.abs(customerValueDelta)} points less customer value`
-
-  const spendComparison = aiSpendDelta === 0
-    ? 'the same AI spend'
-    : aiSpendDelta > 0
-      ? `${fmtGBP(aiSpendDelta)} more AI spend`
-      : `${fmtGBP(Math.abs(aiSpendDelta))} less AI spend`
+  const bullets = [
+    { tone: revenueDelta >= 0 ? 'positive' : 'negative', text: `${fmt(revenueDelta, false)} vs Option ${selectedOption.id}` },
+    { tone: trustDelta >= 0 ? 'positive' : 'negative',   text: `${fmtTrust(trustDelta)} vs Option ${selectedOption.id}` },
+    { tone: aiSpendDelta <= 0 ? 'positive' : 'warning',  text: `${fmt(aiSpendDelta, true)} vs Option ${selectedOption.id}` },
+  ]
 
   return (
     <div className="preview-note">
-      <p className="panel-label">{`Explaining Option ${previewOption.id}`}</p>
-      <p className="preview-title">{`EXPLAINING OPTION ${previewOption.id}`}</p>
-      <p className="preview-text">
-        {previewOption.explanation}
-      </p>
-      <p className="preview-text">
-        {previewOption.compareSummary.reason}
-      </p>
-      <p className="preview-text">
-        If leaders moved to Option {previewOption.id} instead, the business would take on {fmtGBP(previewImpact.aiSpend)} in AI cost, move trust by {previewImpact.trustDelta > 0 ? '+' : ''}{previewImpact.trustDelta}, shift customer value by {previewImpact.customerValueDelta > 0 ? '+' : ''}{previewImpact.customerValueDelta}, and change revenue by {fmtGBP(previewImpact.revenueDelta)} in this round.
-      </p>
-      <p className="preview-text">
-        Against the chosen Option {selectedOption.id}, that means {revenueComparison}, {trustComparison}, {customerValueComparison}, and {spendComparison}. This is the trade-off under pressure: whether to protect money and trust now, or accept a weaker path that will compound across the rest of the customer journey.
-      </p>
+      <p className="panel-label">{`Option ${previewOption.id} vs your choice (Option ${selectedOption.id})`}</p>
+      <p className="preview-title">{`OPTION ${previewOption.id} — COUNTERFACTUAL`}</p>
+      <div className="preview-bullets">
+        {bullets.map(b => (
+          <p key={b.text} className={`preview-bullet preview-bullet-${b.tone}`}>{b.text}</p>
+        ))}
+      </div>
+      <p className="preview-text preview-text-context">{previewOption.compareSummary.reason}</p>
     </div>
   )
 }
@@ -70,22 +52,22 @@ function buildDecisionNarrative(selectedOption, idealOption) {
   const spendGap = selectedOption.businessImpact.aiSpend - idealOption.businessImpact.aiSpend
 
   if (selectedOption.id === idealOption.id) {
-    return 'This is a balanced leadership choice: strong commercial upside, disciplined spend, and the cleanest trust outcome available in this stage.'
+    return 'This matches the Optimal AI Experience path: precise targeting architecture, disciplined inference spend, and the strongest trust outcome available at this stage.'
   }
 
   if (selectedOption.businessImpact.aiSpend < idealOption.businessImpact.aiSpend && revenueGap > 0) {
-    return `You protected ${fmtGBP(idealOption.businessImpact.aiSpend - selectedOption.businessImpact.aiSpend)} of budget, but left ${fmtGBP(revenueGap)} of projected revenue on the table. This is a false economy unless later rounds can recover the damage.`
+    return `This choice preserved ${fmtGBP(idealOption.businessImpact.aiSpend - selectedOption.businessImpact.aiSpend)} of AI budget versus the Optimal AI Experience path, but the lower inference investment reduced specificity and contextual awareness — leaving ${fmtGBP(revenueGap)} of revenue uncaptured. Reduced AI spend at a high-leverage stage is not cost discipline: it is a compounding disadvantage.`
   }
 
   if (spendGap > 0 && revenueGap >= 0) {
-    return `This choice spent ${fmtGBP(spendGap)} more than the best-balanced option and still failed to match the upside. Experience may improve, but the ROI profile weakens.`
+    return `This choice consumed ${fmtGBP(spendGap)} more in AI inference cost than the Optimal AI Experience path — and still delivered less revenue. Higher spend without architectural precision is the defining cost failure of agentic AI systems.`
   }
 
   if (trustGap > 0) {
-    return `This decision gives away ${trustGap} points of trust against the ideal path. In this simulation, that is not a soft metric: it reduces the quality of every stage that follows.`
+    return `This decision concedes ${trustGap} trust points versus the Optimal AI Experience path. In agentic AI systems, trust is the compounding variable: lower trust reduces adoption, weakens engagement depth, and erodes retention resilience at every subsequent stage.`
   }
 
-  return 'This is a weaker leadership trade-off than the ideal path: less value created, less trust protected, or more budget consumed than necessary.'
+  return 'This creates a compounding disadvantage versus the Optimal AI Experience path — less value created, less trust preserved, or more AI cost consumed than the experience architecture requires.'
 }
 
 function buildPressureMessages({ kpis, idealKpis, simulationConfig, currentRoundIndex, totalRounds, livePath, bestPath, currentRound }) {
@@ -99,27 +81,27 @@ function buildPressureMessages({ kpis, idealKpis, simulationConfig, currentRound
   const currentPathGap = bestPath[currentRound.stageIndex] - livePath[currentRound.stageIndex]
 
   if (budgetRatio <= 0.25) {
-    messages.push('Budget remaining is getting tight. This materially narrows flexibility for the stages still to come.')
+    messages.push('AI budget is critically low. The remaining stages offer limited flexibility to invest in higher-specificity or higher-proactiveness architectures.')
   }
 
   if (revenueGap >= 1_000_000) {
-    messages.push(`You are now ${fmtGBP(revenueGap)} below the ideal revenue path. Missed upside is becoming cumulative, not temporary.`)
+    messages.push(`Now ${fmtGBP(revenueGap)} below the Optimal AI Experience revenue trajectory — the cumulative gap reflects compounding AIX architecture decisions, visible as divergence in the chart.`)
   }
 
   if (trustGap >= 4) {
-    messages.push(`Trust is now ${trustGap} points below the ideal path entering ${currentRound.stage}. That increases the cost of recovery in later rounds.`)
+    messages.push(`Trust is ${trustGap} points below the Optimal AI Experience path entering ${currentRound.stage}. Lower trust at this stage suppresses adoption and reduces the receptiveness that makes future agentic interventions effective.`)
   }
 
   if (spendGap >= 250_000) {
-    messages.push(`You have spent ${fmtGBP(spendGap)} more than the ideal path so far. Earlier overspend is reducing strategic room.`)
+    messages.push(`${fmtGBP(spendGap)} more in AI inference cost than the Optimal AI Experience path so far — the excess spend has not produced proportionate specificity or contextual value, and it narrows budget for higher-leverage stages ahead.`)
   }
 
   if (currentPathGap >= 4) {
-    messages.push(`You are ahead of BAU, but still ${currentPathGap} Customer Value Index points behind the ideal AI experience path.`)
+    messages.push(`Ahead of the BAU Experience path, but ${currentPathGap} CVI points behind the Optimal AI Experience path — the gap reflects the cumulative difference in agentic architecture quality (visible in the chart).`)
   }
 
   if (currentRoundIndex >= Math.floor(totalRounds / 2) && revenueGap > 0 && budgetRatio < 0.5) {
-    messages.push('The margin for recovery is narrowing. Weak earlier trade-offs are now harder to unwind.')
+    messages.push('Recovery margin is narrowing. Suboptimal agentic architecture decisions from earlier stages are now harder to compensate for — the compounding effect is locked in.')
   }
 
   return messages.slice(0, 4)
@@ -133,13 +115,13 @@ function buildTradeoffBullets(selectedOption, idealOption, kpis, idealKpis) {
   const cumulativeRevenueGap = idealKpis.cumulativeRevenue - kpis.cumulativeRevenue
   const bullets = []
 
-  if (spendGap > 0) bullets.push({ tone: 'warning', text: `Spent ${fmtGBP(spendGap)} more than optimal in this stage.` })
-  if (revenueGap > 0) bullets.push({ tone: 'negative', text: `${fmtGBP(revenueGap)} behind the ideal strategy in projected stage revenue.` })
-  if (trustGap > 0) bullets.push({ tone: 'negative', text: `Trust is ${trustGap} points below ideal, weakening downstream retention and advocacy.` })
-  if (cumulativeRevenueGap > 0) bullets.push({ tone: 'warning', text: `${fmtGBP(cumulativeRevenueGap)} behind the ideal cumulative revenue path.` })
+  if (spendGap > 0) bullets.push({ tone: 'warning', text: `${fmtGBP(spendGap)} more AI inference cost than the Optimal AI Experience path — higher spend without proportionate specificity or contextual precision (see Business KPIs).` })
+  if (revenueGap > 0) bullets.push({ tone: 'negative', text: `${fmtGBP(revenueGap)} below the Optimal AI Experience revenue at this stage — the CVI divergence from the agentic architecture gap is visible in the chart.` })
+  if (trustGap > 0) bullets.push({ tone: 'negative', text: `Trust is ${trustGap} point${trustGap !== 1 ? 's' : ''} below the Optimal AI Experience path — trust lost at this stage compounds into lower adoption and weaker retention resilience ahead.` })
+  if (cumulativeRevenueGap > 0) bullets.push({ tone: 'warning', text: `Cumulative revenue is ${fmtGBP(cumulativeRevenueGap)} below the Optimal AI Experience trajectory — each suboptimal architecture decision compounds the gap.` })
 
   if (bullets.length === 0 && selectedOption.id === idealOption.id) {
-    bullets.push({ tone: 'positive', text: 'This matches the ideal leadership choice for this stage.' })
+    bullets.push({ tone: 'positive', text: 'This matches the Optimal AI Experience path for this stage.' })
   }
 
   return bullets.slice(0, 4)
@@ -172,7 +154,7 @@ export default function ExplanationPanel({
   })
   const decisionNarrative = buildDecisionNarrative(selectedOption, idealOption)
   const tradeoffBullets = buildTradeoffBullets(selectedOption, idealOption, kpis, idealKpis)
-  const insightBullets = [...tradeoffBullets, ...pressureMessages.map(text => ({ tone: 'neutral', text }))].slice(0, 4)
+  const insightBullets = [...tradeoffBullets, ...pressureMessages.map(text => ({ tone: 'neutral', text }))].slice(0, 3)
 
   return (
     <div className="explanation-panel">
@@ -185,6 +167,15 @@ export default function ExplanationPanel({
           ? (
             <>
               {decisionNarrative && <p className="insight-text insight-emphasis">{decisionNarrative}</p>}
+              {selectedOption?.insightExperience && (
+                <p className="insight-text insight-section"><strong>Experience:</strong> {selectedOption.insightExperience}</p>
+              )}
+              {selectedOption?.insightCostDrivers && (
+                <p className="insight-text insight-section"><strong>Cost drivers:</strong> {selectedOption.insightCostDrivers}</p>
+              )}
+              {selectedOption?.insightRevenue && (
+                <p className="insight-text insight-section"><strong>Revenue impact:</strong> {selectedOption.insightRevenue}</p>
+              )}
               {insightBullets.length > 0 && (
                 <div className="insight-bullets">
                   {insightBullets.map(item => (

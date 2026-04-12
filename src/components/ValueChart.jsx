@@ -12,7 +12,7 @@ import {
 const COLOR = {
   baseline: '#9ca3af',  // gray    — BAU Experience
   live:     '#2563eb',  // blue    — Leaders' Path
-  best:     '#16a34a',  // green   — Ideal AI Experience
+  best:     '#16a34a',  // green   — Optimal AI Experience
   worst:    '#dc2626',  // red     — Worst-Case Scenario
   preview:  '#f59e0b',  // amber   — Explanation
 }
@@ -24,45 +24,37 @@ function fmtGBP(value) {
   return `£${Math.round(abs)}`
 }
 
-function formatIdealDelta(delta) {
-  if (delta === 0) return 'On ideal path'
-  if (delta > 0) return `${delta} points above ideal`
-  return `${Math.abs(delta)} points below ideal`
-}
-
-function resolveRevenueGap(title, actualRevenueGap, previewRevenueGap) {
-  if (title === 'Ideal AI Experience') return 'Revenue gap: On ideal path'
-  if (title === 'Other Option Path') {
-    return previewRevenueGap > 0
-      ? `Revenue gap: ${fmtGBP(previewRevenueGap)} behind ideal path`
-      : 'Revenue gap: On ideal path'
-  }
-  return actualRevenueGap > 0
-    ? `Revenue gap: ${fmtGBP(actualRevenueGap)} behind ideal path`
-    : 'Revenue gap: On ideal path'
-}
-
-function CustomTooltip({ active, label, payload, bestPath, stages, actualRevenueGap, previewRevenueGap }) {
+function CustomTooltip({ active, label, payload, bestPath, stages, actualRevenueGap }) {
   if (!active || !payload?.length) return null
 
-  const visiblePoint = payload.find(item => item.value != null)
-  if (!visiblePoint) return null
-
   const stageIndex = stages.indexOf(label)
-  const idealValue = stageIndex >= 0 ? bestPath[stageIndex] : null
-  const currentValue = Math.round(visiblePoint.value)
-  const idealDelta = idealValue == null ? null : Math.round(currentValue - idealValue)
+  const optimalValue = stageIndex >= 0 ? bestPath[stageIndex] : null
+
+  const leadersItem  = payload.find(p => p.dataKey === "Leaders' Path")
+  const leadersValue = leadersItem ? Math.round(leadersItem.value) : null
+
+  const optimalItem  = payload.find(p => p.dataKey === 'Optimal AI Experience')
+  const optimalDisplay = optimalItem ? Math.round(optimalItem.value) : optimalValue
+
+  const delta = leadersValue != null && optimalDisplay != null ? leadersValue - optimalDisplay : null
 
   return (
     <div className="chart-tooltip">
       <p className="chart-tooltip-stage">{label}</p>
-      <p className="chart-tooltip-value">CVI: {currentValue}</p>
-      <p className="chart-tooltip-detail">
-        Delta vs ideal: {idealDelta == null ? 'Unavailable' : formatIdealDelta(idealDelta)}
+      <p className="chart-tooltip-value chart-tooltip-optimal">
+        Optimal AI Experience: CVI {optimalDisplay ?? '—'}
       </p>
-      <p className="chart-tooltip-detail">
-        {resolveRevenueGap(visiblePoint.name, actualRevenueGap, previewRevenueGap)}
+      <p className="chart-tooltip-value chart-tooltip-leaders">
+        Leaders&apos; Path: CVI {leadersValue ?? 'Not started'}
       </p>
+      <p className="chart-tooltip-detail chart-tooltip-gap">
+        Delta CVI: {delta == null ? 'Not available yet' : `${delta > 0 ? '+' : ''}${delta} CVI`}
+      </p>
+      {leadersValue != null && (
+        <p className="chart-tooltip-detail">
+          Revenue gap vs optimal path: {actualRevenueGap > 0 ? fmtGBP(actualRevenueGap) : '£0'}
+        </p>
+      )}
     </div>
   )
 }
@@ -78,7 +70,6 @@ export default function ValueChart({
   showWorstPath,
   previewPath,
   actualRevenueGap,
-  previewRevenueGap,
 }) {
   // ── Build chart data ──────────────────────────────────────────────────────────
   // BAU Experience is always present.
@@ -91,7 +82,7 @@ export default function ValueChart({
       'BAU Experience': baselinePath[i],
     }
     if (showLivePath)  point["Leaders' Path"] = livePath[i]
-    if (showBestPath)  point['Ideal AI Experience'] = bestPath[i]
+    if (showBestPath)  point['Optimal AI Experience'] = bestPath[i]
     if (showWorstPath) point['Worst-Case Scenario'] = worstPath[i]
     if (previewPath)   point['Other Option Path'] = previewPath[i]
     return point
@@ -102,14 +93,14 @@ export default function ValueChart({
   const legendPayload = [
     { value: 'BAU Experience',      type: 'line', color: COLOR.baseline },
     ...(showLivePath  ? [{ value: "Leaders' Path", type: 'line', color: COLOR.live }] : []),
-    ...(showBestPath  ? [{ value: 'Ideal AI Experience', type: 'line', color: COLOR.best }] : []),
+    ...(showBestPath  ? [{ value: 'Optimal AI Experience', type: 'line', color: COLOR.best }] : []),
     ...(showWorstPath ? [{ value: 'Worst-Case Scenario', type: 'line', color: COLOR.worst }] : []),
     ...(previewPath   ? [{ value: 'Other Option Path', type: 'line', color: COLOR.preview }] : []),
   ]
 
   return (
     <div className="value-chart">
-      <ResponsiveContainer width="100%" height={380}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 16, right: 24, left: 16, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
 
@@ -136,7 +127,6 @@ export default function ValueChart({
               bestPath={bestPath}
               stages={stages}
               actualRevenueGap={actualRevenueGap}
-              previewRevenueGap={previewRevenueGap}
             />}
           />
 
@@ -176,7 +166,7 @@ export default function ValueChart({
 
           <Line
             type="monotone"
-            dataKey="Ideal AI Experience"
+            dataKey="Optimal AI Experience"
             hide={!showBestPath}
             stroke={COLOR.best}
             strokeWidth={2}

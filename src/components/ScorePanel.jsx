@@ -99,7 +99,7 @@ const KPI_GROUPS = [
     items: [
       {
         key:        'customerEconomicValueIndex',
-        label:      'Customer Value Index (CVI)',
+        label:      'Customer Value Index (CVI, index)',
         hint:       'value trajectory',
         format:     fmtScore,
         isPositive: (v, cfg) => v >= cfg.startingCustomerValueIndex,
@@ -162,7 +162,10 @@ export default function ScorePanel({
         <div className="score-baseline-banner">
           <p className="score-baseline-title">Baseline reference state</p>
           <p className="score-baseline-text">
-            No class decisions have been applied yet. Trust Index, Adoption Score, and Customer Value Index (CVI) are shown as starting baseline conditions, while revenue uplift and AI costs begin at zero.
+            No decisions have been applied yet. The values below are modelled baseline assumptions used to compare outcomes consistently across the journey — they are not external benchmarks.
+          </p>
+          <p className="score-baseline-text">
+            Trust Index (62) and Adoption Score (40%) represent typical pre-AI starting conditions for an SME banking relationship: moderate trust, partial digital adoption. Customer Value Index (CVI) starts at 100 — this is an index where 100 = baseline, not a maximum score. It rises or falls with decisions and can exceed 100 if AI is deployed well. Revenue uplift and AI costs begin at zero.
           </p>
         </div>
       )}
@@ -212,7 +215,7 @@ export default function ScorePanel({
                       ? `baseline reference ${fmtScore(cfg.startingTrust)} · ${fmtBaselineDelta(baselineDeltas.trust)}`
                       : key === 'adoption'
                         ? `baseline reference ${fmtInt(cfg.startingAdoption)}% · ${fmtBaselineDelta(baselineDeltas.adoption)}`
-                        : `baseline reference ${fmtScore(cfg.startingCustomerValueIndex)} · ${fmtBaselineDelta(baselineDeltas.customerEconomicValueIndex)}`
+                        : `index: 100 = baseline · ${fmtBaselineDelta(baselineDeltas.customerEconomicValueIndex)}`
 
               return (
                 <div key={key} className="score-item">

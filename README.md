@@ -1,21 +1,11 @@
-<<<<<<< HEAD
-# React + Vite
+# AI Experience Decision Lab
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React/Vite simulation app for teaching CX-led AI strategy through SME banking decisions.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
-# ai-experience-decision-lab
-AI experience simulator
->>>>>>> 9f927f169df8883a9051d2427bb9ed90b790e8f8
+The app lets participants make leadership trade-offs across the SME customer journey and see how those decisions affect:
+- budget
+- AI costs
+- trust
+- adoption
+- customer value
+- revenue

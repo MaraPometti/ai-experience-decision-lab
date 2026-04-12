@@ -1,4 +1,11 @@
-export default function OptionCards({ options, selectedOption, previewOption, onSelectOption, onPreviewOption }) {
+export default function OptionCards({
+  options,
+  bestOptionId,
+  selectedOption,
+  previewOption,
+  onSelectOption,
+  onPreviewOption,
+}) {
   const isLocked = selectedOption !== null
 
   return (
@@ -6,6 +13,7 @@ export default function OptionCards({ options, selectedOption, previewOption, on
       {options.map(option => {
         const isSelected  = selectedOption?.id === option.id
         const isPreviewed = previewOption?.id  === option.id
+        const isBestOption = option.id === bestOptionId
 
         return (
           <div
@@ -19,7 +27,12 @@ export default function OptionCards({ options, selectedOption, previewOption, on
           >
             <div className="option-card-body">
               <span className="option-id">{option.id}</span>
-              <p className="option-label">{option.label}</p>
+              <div className="option-copy">
+                {isBestOption && isLocked && (
+                  <span className="option-best-badge">Optimal trade-off</span>
+                )}
+                <p className="option-label">{option.label}</p>
+              </div>
             </div>
 
             <div className="option-card-footer">
