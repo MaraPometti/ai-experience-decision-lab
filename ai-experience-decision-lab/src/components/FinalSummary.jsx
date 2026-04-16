@@ -6,25 +6,25 @@ function getResult(cei) {
     label: 'High-Value AI Experience',
     cls: 'result-green',
     description:
-      'The class consistently made high-impact AI decisions. The customer journey moved strongly above the BAU baseline and closely tracked the high-value reference path.',
+      'Your decisions consistently created high impact. The customer journey rose well above the baseline and closely matched the best possible AI outcome.',
   }
   if (cei >= 20) return {
     label: 'Balanced but Moderate Strategy',
     cls: 'result-blue',
     description:
-      'A solid set of decisions that lifted the journey above baseline. Good instincts in several stages, but some high-value opportunities were left on the table.',
+      'A solid set of decisions that moved the journey above baseline. Good choices in several stages, but some high-value opportunities were not taken.',
   }
   if (cei >= 5) return {
     label: 'Efficient but Low Impact',
     cls: 'result-amber',
     description:
-      'Choices were cautious and created modest improvements. The strategy avoided major errors, but significant value went uncaptured across the journey.',
+      'Cautious decisions created modest improvements. Major mistakes were avoided, but significant value was left uncaptured across the journey.',
   }
   return {
     label: 'Misaligned AI Strategy',
     cls: 'result-red',
     description:
-      'The combination of choices created drag at multiple stages. Some short-term gains masked downstream erosion that compounded across the journey.',
+      'The combination of choices created drag at multiple stages. Some short-term gains masked a deeper decline that built up across the journey.',
   }
 }
 
@@ -51,68 +51,68 @@ function generateInsights(livePath, baselinePath, bestPath, journeyStages) {
   // 1. Strongest stage
   if (maxDelta >= 5) {
     insights.push(
-      `Strongest uplift at ${journeyStages[maxIdx]}: +${maxDelta} above BAU. Decisions at this stage created the most visible value in the simulation.`
+      `Biggest gain at ${journeyStages[maxIdx]}: +${maxDelta} above the baseline. Your decisions here created the most value across the whole journey.`
     )
   } else if (maxDelta > 0) {
     insights.push(
-      `Highest single-stage lift was only +${maxDelta} at ${journeyStages[maxIdx]} — modest across all stages.`
+      `The best result was only +${maxDelta} at ${journeyStages[maxIdx]} — a modest improvement across all stages.`
     )
   } else {
     insights.push(
-      'No stage exceeded the BAU baseline. Every choice met or underperformed the status quo.'
+      'No stage performed above the baseline. Every decision met or fell short of the standard outcome.'
     )
   }
 
   // 2. Weakest / drag stage
   if (minDelta <= -5) {
     insights.push(
-      `Biggest drag at ${journeyStages[minIdx]}: ${minDelta} below BAU. This was the largest single value leak in the simulation.`
+      `Biggest drop at ${journeyStages[minIdx]}: ${minDelta} below the baseline. This stage was the largest single source of lost value.`
     )
   } else if (minDelta < 0) {
     insights.push(
-      `Slight drag at ${journeyStages[minIdx]} (${minDelta} vs BAU). No catastrophic choices, but some value was lost at this stage.`
+      `Small drop at ${journeyStages[minIdx]} (${minDelta} vs baseline). No major mistakes, but some value was lost at this stage.`
     )
   } else {
     insights.push(
-      'No stage fell below the BAU baseline — the strategy maintained minimum baseline performance throughout.'
+      'No stage fell below the baseline — the strategy held its ground at every step.'
     )
   }
 
   // 3. Proximity to reference paths
   if (pct >= 60) {
     insights.push(
-      `The class path captured approximately ${pct}% of the gap between BAU and the High-Value AI Path — a strong overall result.`
+      `Your decisions captured roughly ${pct}% of the gap between the baseline and the best possible AI outcome — a strong overall result.`
     )
   } else if (pct >= 25) {
     insights.push(
-      `About ${pct}% of the potential uplift between BAU and the High-Value AI Path was captured — a moderate overall outcome.`
+      `About ${pct}% of the available improvement between the baseline and the best possible AI outcome was achieved — a moderate result.`
     )
   } else if (pct >= 0) {
     insights.push(
-      `Only ${pct}% of the available uplift between BAU and the High-Value AI Path was realized — most potential value went uncaptured.`
+      `Only ${pct}% of the available improvement was achieved — most of the potential value went uncaptured.`
     )
   } else {
     insights.push(
-      'The class path fell below BAU on average. Net drag across the journey means value was destroyed rather than created.'
+      'The overall result fell below the baseline. The combined effect of these decisions reduced value rather than creating it.'
     )
   }
 
   // 4. Late-stage trajectory
   if (lateAvgDelta >= 20) {
     insights.push(
-      'Late-stage performance (Expansion → Loyalty) was strong. Earlier gains compounded well and value held through the final stages.'
+      'Performance held up strongly in the final stages (Expansion → Loyalty). Earlier gains compounded well and value was sustained to the end.'
     )
   } else if (lateAvgDelta >= 5) {
     insights.push(
-      'Late-stage performance was moderate. Some value built in earlier rounds was not fully sustained through Expansion and Loyalty.'
+      'Performance in the final stages was moderate. Some of the value built up in earlier rounds was not fully maintained through Expansion and Loyalty.'
     )
   } else if (lateAvgDelta >= 0) {
     insights.push(
-      'Late-stage performance was flat. Gains from the first half barely carried into the final three stages — a missed compounding opportunity.'
+      'Performance in the final stages was flat. The early gains barely carried through to Expansion, Retention, and Loyalty — a missed opportunity to compound value.'
     )
   } else {
     insights.push(
-      'Late-stage performance was weak. Choices at Expansion, Retention, or Loyalty eroded earlier gains — the biggest missed opportunity in the simulation.'
+      'Performance in the final stages was poor. Decisions at Expansion, Retention, or Loyalty eroded earlier gains — the biggest missed opportunity across the journey.'
     )
   }
 
@@ -121,10 +121,10 @@ function generateInsights(livePath, baselinePath, bestPath, journeyStages) {
 
 // ── Score metadata ────────────────────────────────────────────────────────────
 const SCORE_META = {
-  cei:       { label: 'CEI Impact',       hint: 'Customer economic index' },
-  trust:     { label: 'Trust Impact',     hint: 'Customer trust score' },
-  cost:      { label: 'Cost Impact',      hint: 'Operational efficiency' },
-  retention: { label: 'Retention Impact', hint: 'Customer retention' },
+  cei:       { label: 'CEI Impact',       hint: 'Overall economic value created' },
+  trust:     { label: 'Trust Impact',     hint: 'How much trust was built or lost' },
+  cost:      { label: 'Cost Impact',      hint: 'Effect on AI operating cost' },
+  retention: { label: 'Retention Impact', hint: 'Likelihood customers stayed' },
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────

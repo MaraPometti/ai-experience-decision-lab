@@ -401,7 +401,7 @@ export default function App() {
           </span>
           <span className="baseline-note-sep">·</span>
           <span className="baseline-note-text">
-            Customer Value Index (100): simulation index — 100 = starting point; rises or falls with decisions.
+            Customer Value Index (60): modelled baseline customer value before any AI experience decisions are applied — rises or falls with choices across the journey.
           </span>
           <span className="baseline-note-sep">·</span>
           <span className="baseline-note-text">

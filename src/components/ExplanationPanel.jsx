@@ -52,22 +52,22 @@ function buildDecisionNarrative(selectedOption, idealOption) {
   const spendGap = selectedOption.businessImpact.aiSpend - idealOption.businessImpact.aiSpend
 
   if (selectedOption.id === idealOption.id) {
-    return 'This matches the Optimal AI Experience path: precise targeting architecture, disciplined inference spend, and the strongest trust outcome available at this stage.'
+    return 'This matches the Optimal AI Experience path — the right level of AI investment, focused on the right moments, with the strongest trust outcome available at this stage.'
   }
 
   if (selectedOption.businessImpact.aiSpend < idealOption.businessImpact.aiSpend && revenueGap > 0) {
-    return `This choice preserved ${fmtGBP(idealOption.businessImpact.aiSpend - selectedOption.businessImpact.aiSpend)} of AI budget versus the Optimal AI Experience path, but the lower inference investment reduced specificity and contextual awareness — leaving ${fmtGBP(revenueGap)} of revenue uncaptured. Reduced AI spend at a high-leverage stage is not cost discipline: it is a compounding disadvantage.`
+    return `This choice preserved ${fmtGBP(idealOption.businessImpact.aiSpend - selectedOption.businessImpact.aiSpend)} in AI spend versus the Optimal AI Experience path, but the lower investment reduced targeting precision and customer value — leaving ${fmtGBP(revenueGap)} of revenue uncaptured. Spending less at a high-leverage stage is not cost discipline: it is a compounding disadvantage.`
   }
 
   if (spendGap > 0 && revenueGap >= 0) {
-    return `This choice consumed ${fmtGBP(spendGap)} more in AI inference cost than the Optimal AI Experience path — and still delivered less revenue. Higher spend without architectural precision is the defining cost failure of agentic AI systems.`
+    return `This choice spent ${fmtGBP(spendGap)} more than the Optimal AI Experience path — and still delivered less revenue. Higher spend without smarter AI design is the defining cost failure at this stage.`
   }
 
   if (trustGap > 0) {
-    return `This decision concedes ${trustGap} trust points versus the Optimal AI Experience path. In agentic AI systems, trust is the compounding variable: lower trust reduces adoption, weakens engagement depth, and erodes retention resilience at every subsequent stage.`
+    return `This decision loses ${trustGap} trust points versus the Optimal AI Experience path. Trust is the compounding variable: lower trust reduces adoption, weakens engagement, and erodes retention resilience at every stage that follows.`
   }
 
-  return 'This creates a compounding disadvantage versus the Optimal AI Experience path — less value created, less trust preserved, or more AI cost consumed than the experience architecture requires.'
+  return 'This creates a compounding disadvantage versus the Optimal AI Experience path — less value created, less trust preserved, or more AI cost than the decision required.'
 }
 
 function buildPressureMessages({ kpis, idealKpis, simulationConfig, currentRoundIndex, totalRounds, livePath, bestPath, currentRound }) {
@@ -81,27 +81,27 @@ function buildPressureMessages({ kpis, idealKpis, simulationConfig, currentRound
   const currentPathGap = bestPath[currentRound.stageIndex] - livePath[currentRound.stageIndex]
 
   if (budgetRatio <= 0.25) {
-    messages.push('AI budget is critically low. The remaining stages offer limited flexibility to invest in higher-specificity or higher-proactiveness architectures.')
+    messages.push('AI budget is critically low. The remaining stages offer limited flexibility to invest in more targeted or higher-quality AI approaches.')
   }
 
   if (revenueGap >= 1_000_000) {
-    messages.push(`Now ${fmtGBP(revenueGap)} below the Optimal AI Experience revenue trajectory — the cumulative gap reflects compounding AIX architecture decisions, visible as divergence in the chart.`)
+    messages.push(`Now ${fmtGBP(revenueGap)} below the Optimal AI Experience revenue trajectory — the cumulative gap reflects the build-up of less effective AI decisions, visible as divergence in the chart.`)
   }
 
   if (trustGap >= 4) {
-    messages.push(`Trust is ${trustGap} points below the Optimal AI Experience path entering ${currentRound.stage}. Lower trust at this stage suppresses adoption and reduces the receptiveness that makes future agentic interventions effective.`)
+    messages.push(`Trust is ${trustGap} points below the Optimal AI Experience path entering ${currentRound.stage}. Lower trust suppresses adoption and reduces how receptive customers are to AI-driven support in later stages.`)
   }
 
   if (spendGap >= 250_000) {
-    messages.push(`${fmtGBP(spendGap)} more in AI inference cost than the Optimal AI Experience path so far — the excess spend has not produced proportionate specificity or contextual value, and it narrows budget for higher-leverage stages ahead.`)
+    messages.push(`${fmtGBP(spendGap)} more in AI cost than the Optimal AI Experience path so far — the excess spend has not produced proportionate targeting precision or customer value, and it narrows budget for higher-leverage stages ahead.`)
   }
 
   if (currentPathGap >= 4) {
-    messages.push(`Ahead of the BAU Experience path, but ${currentPathGap} CVI points behind the Optimal AI Experience path — the gap reflects the cumulative difference in agentic architecture quality (visible in the chart).`)
+    messages.push(`Ahead of the BAU Experience path, but ${currentPathGap} CVI points behind the Optimal AI Experience path — the gap reflects cumulative AI design decisions, visible in the chart.`)
   }
 
   if (currentRoundIndex >= Math.floor(totalRounds / 2) && revenueGap > 0 && budgetRatio < 0.5) {
-    messages.push('Recovery margin is narrowing. Suboptimal agentic architecture decisions from earlier stages are now harder to compensate for — the compounding effect is locked in.')
+    messages.push('Recovery margin is narrowing. Less effective AI decisions from earlier stages are now harder to compensate for — the compounding effect is locked in.')
   }
 
   return messages.slice(0, 4)
@@ -115,10 +115,10 @@ function buildTradeoffBullets(selectedOption, idealOption, kpis, idealKpis) {
   const cumulativeRevenueGap = idealKpis.cumulativeRevenue - kpis.cumulativeRevenue
   const bullets = []
 
-  if (spendGap > 0) bullets.push({ tone: 'warning', text: `${fmtGBP(spendGap)} more AI inference cost than the Optimal AI Experience path — higher spend without proportionate specificity or contextual precision (see Business KPIs).` })
-  if (revenueGap > 0) bullets.push({ tone: 'negative', text: `${fmtGBP(revenueGap)} below the Optimal AI Experience revenue at this stage — the CVI divergence from the agentic architecture gap is visible in the chart.` })
+  if (spendGap > 0) bullets.push({ tone: 'warning', text: `${fmtGBP(spendGap)} more in AI cost than the Optimal AI Experience path — higher spend without proportionate targeting precision or customer value (see Business KPIs).` })
+  if (revenueGap > 0) bullets.push({ tone: 'negative', text: `${fmtGBP(revenueGap)} below the Optimal AI Experience revenue at this stage — the CVI divergence is visible in the chart.` })
   if (trustGap > 0) bullets.push({ tone: 'negative', text: `Trust is ${trustGap} point${trustGap !== 1 ? 's' : ''} below the Optimal AI Experience path — trust lost at this stage compounds into lower adoption and weaker retention resilience ahead.` })
-  if (cumulativeRevenueGap > 0) bullets.push({ tone: 'warning', text: `Cumulative revenue is ${fmtGBP(cumulativeRevenueGap)} below the Optimal AI Experience trajectory — each suboptimal architecture decision compounds the gap.` })
+  if (cumulativeRevenueGap > 0) bullets.push({ tone: 'warning', text: `Cumulative revenue is ${fmtGBP(cumulativeRevenueGap)} below the Optimal AI Experience trajectory — each less effective AI decision compounds the gap.` })
 
   if (bullets.length === 0 && selectedOption.id === idealOption.id) {
     bullets.push({ tone: 'positive', text: 'This matches the Optimal AI Experience path for this stage.' })

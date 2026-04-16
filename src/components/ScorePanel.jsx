@@ -165,7 +165,7 @@ export default function ScorePanel({
             No decisions have been applied yet. The values below are modelled baseline assumptions used to compare outcomes consistently across the journey — they are not external benchmarks.
           </p>
           <p className="score-baseline-text">
-            Trust Index (62) and Adoption Score (40%) represent typical pre-AI starting conditions for an SME banking relationship: moderate trust, partial digital adoption. Customer Value Index (CVI) starts at 100 — this is an index where 100 = baseline, not a maximum score. It rises or falls with decisions and can exceed 100 if AI is deployed well. Revenue uplift and AI costs begin at zero.
+            Trust Index (62) and Adoption Score (40%) represent typical pre-AI starting conditions for an SME banking relationship: moderate trust, partial digital adoption. Customer Value Index (CVI) starts at 60 — this represents the level of customer value in a standard, non-AI banking relationship. It rises with strong AI decisions and falls with poor ones. Revenue uplift and AI costs begin at zero.
           </p>
         </div>
       )}
@@ -215,7 +215,7 @@ export default function ScorePanel({
                       ? `baseline reference ${fmtScore(cfg.startingTrust)} · ${fmtBaselineDelta(baselineDeltas.trust)}`
                       : key === 'adoption'
                         ? `baseline reference ${fmtInt(cfg.startingAdoption)}% · ${fmtBaselineDelta(baselineDeltas.adoption)}`
-                        : `index: 100 = baseline · ${fmtBaselineDelta(baselineDeltas.customerEconomicValueIndex)}`
+                        : `index: 60 = pre-AI baseline · ${fmtBaselineDelta(baselineDeltas.customerEconomicValueIndex)}`
 
               return (
                 <div key={key} className="score-item">

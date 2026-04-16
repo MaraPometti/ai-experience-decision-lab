@@ -89,7 +89,7 @@ const FINAL_KPI_META = [
   {
     key:        'customerEconomicValueIndex',
     label:      'Customer Value Index (index)',
-    hint:       'index: 100 = baseline starting point',
+    hint:       'index: 60 = pre-AI baseline',
     format:     fmtInt,
     isPositive: (v, cfg) => v >= cfg.startingCustomerValueIndex,
   },
