@@ -1,0 +1,132 @@
+{
+  "scenarioId": "sme-ai-leadership-sim",
+  "scenarioTitle": "AI Experience Decision Lab",
+  "extractedRounds": [
+    {
+      "stage": "Acquisition",
+      "prompt": "The bank wants to use AI to improve how it targets and reaches SME prospects. The AI analyses signals such as sector, growth stage, transaction patterns, and digital behaviour to identify strong leads and personalise outreach. The key decision is where to focus the AI's effort: apply it across all prospects, concentrate it on the most promising customers, or keep the existing campaign system.",
+      "options": [
+        {
+          "label": "Use AI to personalise outreach for every SME prospect — apply the same level of AI effort across all leads, regardless of how likely they are to convert.",
+          "explanation": "By applying AI equally to every prospect, the system generates personalised outreach but cannot distinguish a strong lead from a weak one. The £1.2M cost comes from running AI at full scale across the entire prospect pool. Without any targeting focus, conversion rates are diluted and the customers acquired are less well-matched to what the bank offers. This shows up in the CVI chart: an early uplift that fades faster than the optimal path as poorly matched customers disengage through Activation and Engagement. Compared to Option A, the lack of targeting precision means weaker customers, lower adoption, and cumulative revenue £800K short of the optimal outcome."
+        },
+        {
+          "label": "Focus AI personalisation on the highest-potential prospects — apply full AI effort where conversion signals are strongest, and use simple templates for the rest.",
+          "explanation": "This is the most effective approach: focus AI effort where conversion signals are strongest, and use simpler automation for the rest. By reserving full AI personalisation for the highest-potential prospects — where sector, growth stage, and digital engagement all point toward genuine readiness — the system acquires well-matched customers at the right cost. At £0.9M, it is the most cost-efficient acquisition option in the simulation. The CVI trajectory reflects this: better-matched customers activate faster, engage more deeply, and generate more lifetime value. Every stage that follows is more productive because the right customers entered the journey with the right expectations."
+        },
+        {
+          "label": "Keep the existing rules-based campaign system — no AI personalisation, standard static segmentation across all prospects.",
+          "explanation": "Without AI at acquisition, the bank relies on static segments that cannot respond to real-time signals or growth indicators. At £200K, costs are minimal — but the quality of customers entering the journey is structurally lower. The incoming customer base is weaker, less well-matched, and starts the journey without the advantage that AI-driven targeting creates. The CVI shortfall at this stage reflects that quality difference — and the revenue gap versus the Optimal AI Experience path reaches £1.5M by the end of Acquisition, far exceeding the cost saved."
+        }
+      ]
+    },
+    {
+      "stage": "Onboarding",
+      "prompt": "The bank is designing how AI will guide new SME customers through onboarding — account setup, identity checks, and initial configuration. The key decision is how the AI operates: does it work automatically without explanation, guide customers step-by-step with human backup available, or leave the process manual?",
+      "options": [
+        {
+          "label": "Automate onboarding fully with AI — fast completion, but no explanation of decisions, no human backup, and no visibility into how the process works.",
+          "explanation": "Speed without transparency is the defining failure at this stage. The AI processes identity checks, makes eligibility assessments, and configures accounts at high speed — but never explains its reasoning or offers a route to human review. For an SME forming its first real impression of the bank, opaque automated decisions create a trust problem that does not recover. AI processing across the full onboarding workflow drives costs to £1M. The trust loss is immediately visible in the CVI chart as a steep decline through Activation. Because trust damaged at onboarding compounds into lower adoption at every subsequent stage, this is the highest-damage decision in the entire simulation."
+        },
+        {
+          "label": "Guide customers through onboarding with AI — explain each step clearly, route exceptions to a human reviewer, and keep the customer informed of what is happening and why.",
+          "explanation": "This is the right approach: the AI guides, explains, and escalates — rather than deciding silently. The system walks customers through each step, surfaces its reasoning, and routes exceptions to a human reviewer. At £1.1M — marginally more than Option A — it is categorically better in outcome. The CVI trajectory shows the steepest positive uplift in the simulation at this stage. Customers who experience a transparent, guided onboarding adopt more services, engage more deeply, and are significantly more resilient to competitive pressure at Retention and Loyalty. This is the highest-impact decision in the entire simulation."
+        },
+        {
+          "label": "Keep the existing manual onboarding process — digital forms only, no AI guidance, no adaptive support.",
+          "explanation": "Keeping manual forms leaves customers to navigate onboarding alone. There is no guidance, no adaptation to where they are struggling, and the same static process regardless of the customer's profile or situation. At £150K, costs are minimal — but the experience gap is structural. SME customers who navigate a fragmented, unsupported onboarding are measurably less likely to activate key features, engage with advisory services, or expand their product usage. The drag shows up in the CVI chart from this stage forward and does not self-correct. The compounding disadvantage produces a £4.5M revenue shortfall against the Optimal AI Experience path by the end of the simulation."
+        }
+      ]
+    },
+    {
+      "stage": "Activation",
+      "prompt": "Newly onboarded SME customers need help getting started with their services. The bank is deciding how the AI should guide them through first use. The key trade-off is between guidance quality and AI cost: how intelligent and up-to-date should the AI's support be, and how much should the bank spend to deliver it?",
+      "options": [
+        {
+          "label": "Use AI to generate guidance and update it only when the customer's behaviour signals a real change — relevant support at the right moments, without running AI continuously.",
+          "explanation": "This is the most effective activation approach: generate useful guidance, keep it fresh, and update only when the customer's behaviour signals something has genuinely changed. The AI focuses its effort on moments that matter rather than running continuously. At £0.7M, this is the most cost-efficient option in this round. The guidance feels relevant and earned rather than intrusive, which builds trust. The CVI trajectory reflects this: a sustained uplift that carries into Engagement because customers who activate well engage more deeply. The best revenue return per pound of AI spend in the simulation at this stage."
+        },
+        {
+          "label": "Use the most powerful AI model to generate fresh guidance at every session — maximum quality at each interaction, running continuously regardless of whether anything has changed.",
+          "explanation": "Running the highest-quality AI model at every session prioritises raw quality over good judgement — and the cost difference is not justified by the marginal improvement. At £1.6M, this costs more than double Option A. The core problem is that the system cannot tell when maximum AI effort is actually needed: it applies the same processing to a routine account check as to a genuinely complex situation. The CVI trajectory shows early strength but flattens as the budget drain limits investment at higher-leverage stages ahead. This is a technology-preference decision — maximum model quality — applied without cost discipline."
+        },
+        {
+          "label": "Give customers a static activation checklist — no AI guidance, no adaptive support based on how they are actually using the product.",
+          "explanation": "A static checklist cannot adapt to where the customer is, what they have already tried, or where they are struggling. Without guidance, SME customers navigate unfamiliar services alone — activation is slower, incomplete, and leaves weaker engagement patterns. At £100K, the cost is minimal, but the gap is structural: customers who activate poorly generate lower engagement at Expansion and weaker resilience at Retention and Loyalty. The CVI shortfall at this stage is the direct consequence of removing AI at the moment when contextual guidance has the highest leverage in the early journey."
+        }
+      ]
+    },
+    {
+      "stage": "Engagement",
+      "prompt": "SME customers are now actively using the bank. The bank is deciding how AI should support them day-to-day — covering cash flow alerts, business decision support, and proactive guidance. The key trade-off is how to allocate AI effort: apply it across every interaction, focus it on complex situations that genuinely need it, or limit it to periodic summaries.",
+      "options": [
+        {
+          "label": "Use AI to monitor every customer interaction in real time — continuous, always-on intelligence at every touchpoint, with no filtering or prioritisation of which interactions it covers.",
+          "explanation": "Monitoring every interaction at the same intensity mistakes volume for value. The system processes routine cash flow alerts, standard transactions, and high-stakes decisions with identical AI effort — it cannot distinguish a moment that needs intelligence from one that does not. Real-time AI across all touchpoints drives costs to £1.7M, among the highest in the simulation. Trust begins to erode as customers sense they are being constantly monitored: the CVI trajectory shows early strength that reverses sharply at Retention and Loyalty. The short-term £1M revenue gain is more than offset by the relationship damage it creates downstream."
+        },
+        {
+          "label": "Use a smart routing model — handle routine interactions with simple rules, and apply AI only for complex situations, high-value moments, and genuine edge cases.",
+          "explanation": "This is the most effective engagement model: apply simple rules to routine interactions, and reserve AI for complex situations, cash flow emergencies, and genuine moments of uncertainty. At £0.9M, this is the most cost-efficient engagement approach in the simulation. Customers receive AI support when it genuinely adds value — which feels helpful rather than intrusive — and trust is preserved and compounds. The CVI trajectory shows the strongest and most sustained uplift at this stage, carrying through Expansion and Loyalty. The principle embedded in this decision: AI leverage comes from focusing effort on the right moments, not from monitoring everything."
+        },
+        {
+          "label": "Use AI to generate periodic account summaries — batch processing only, no real-time support, no proactive engagement.",
+          "explanation": "Periodic summaries create a reactive experience at the stage where AI adds the most value. Without real-time intelligence, the system cannot respond to emerging cash flow problems, flag expansion opportunities when the customer is ready, or support decisions as they arise — it only reports on what has already happened. Batch processing keeps costs minimal at £150K, but the timing gap is commercially decisive. SME customers who receive no proactive support during active engagement disengage measurably by Expansion. The £1.5M revenue loss at this stage understates the cumulative impact — the absence of live intelligence at the highest-leverage stage creates a declining trajectory that compounds through Retention and Loyalty."
+        }
+      ]
+    },
+    {
+      "stage": "Expansion",
+      "prompt": "Active SME customers are ready to expand — credit, additional products, adjacent services. The bank is designing the AI system that will identify and surface these opportunities. The key decision is how that system is built: a custom-trained model optimised for the bank's commercial priorities, a real-time system grounded in live customer signals, or the existing rules-based engine.",
+      "options": [
+        {
+          "label": "Build a custom AI model trained on the bank's SME transaction history — proprietary, high cost to build and maintain, with the bank's commercial priorities built into how it makes recommendations.",
+          "explanation": "A custom-trained model creates a structural conflict: the AI is optimised for what the bank wants to sell, not what the customer needs to grow. Recommendations appear personalised but are systematically oriented toward bank revenue targets. At £1.9M — the highest spend in this round — most of the cost funds model building, not experience quality. The CVI shows initial strength as the recommendations feel relevant, but trust begins eroding as customers recognise the commercial orientation. Receptiveness to future recommendations falls, and the late-stage trajectory deteriorates. Revenue is £2.5M against the Optimal AI Experience path's £5M — the cost premium does not produce proportionate return."
+        },
+        {
+          "label": "Keep the existing rules-based recommendation engine — fixed product triggers, static customer segments, no AI inference or real-time adaptation.",
+          "explanation": "A rules-based engine cannot read the signals needed for effective expansion targeting. It applies fixed product triggers to static customer segments — it cannot process cash flow trajectories, sector growth indicators, or real-time patterns that indicate when a customer is ready to expand. At £200K, costs are minimal, but expansion opportunities are systematically missed — the right product is offered at the wrong moment to the wrong customer. The CVI shortfall reflects those missed opportunities: customers who receive irrelevant or poorly timed recommendations disengage from the recommendations layer, and that disengagement compounds into lower retention and loyalty."
+        },
+        {
+          "label": "Use an AI system that retrieves live customer signals to ground recommendations in real context — relevant, data-grounded suggestions without the cost or commercial bias of a custom-trained model.",
+          "explanation": "This is the most effective expansion approach: an AI system that retrieves live customer signals — cash flow patterns, sector benchmarks, business cycle indicators — and grounds recommendations in the customer's actual situation rather than a commercial training objective. At £1.2M, it costs substantially less than Option A while delivering better results. The CVI trajectory shows the largest single-stage uplift in the simulation: recommendations that feel specific and earned convert at high rates. Trust is reinforced because the system appears to serve the customer's growth, not the bank's sales targets. This is the highest-return decision in the simulation."
+        }
+      ]
+    },
+    {
+      "stage": "Retention",
+      "prompt": "Early signals — falling transaction volume, reduced feature usage, increased support contacts — suggest some SME customers may be at risk of disengaging or facing financial difficulty. The bank is designing how AI will respond. The key decision is how the AI acts: autonomously without informing the customer, with human approval and transparent communication, or not at all until the customer raises a concern.",
+      "options": [
+        {
+          "label": "Allow AI to act autonomously on risk signals — no human approval required, and no explanation given to the customer of what triggered the intervention.",
+          "explanation": "Acting without explanation is the core failure mode of AI in high-stakes financial situations. The system detects risk signals and acts unilaterally — no human oversight, no customer consent, no explanation of what triggered the response. At a stage when SME customers may be under genuine financial pressure, autonomous action — even well-intentioned — feels intrusive and opaque. Continuous risk monitoring and automated intervention drives costs to £1.4M. The CVI shows short-term retention metrics improve, then reverses sharply: trust destroyed by unexplained autonomous action creates a Loyalty-stage collapse that more than offsets the early retention gain. The intervention kept customers temporarily but destroyed the relationship quality that makes retention economically valuable."
+        },
+        {
+          "label": "Use AI to detect risk early, require human approval before acting, and tell the customer what has been flagged and why — keeping them informed throughout.",
+          "explanation": "This is the right model for AI intervention at a high-stakes stage: detect risk signals early, require human approval before acting, and keep the customer informed throughout. At £1M, it is the most cost-efficient retention approach in this round. Customers who receive transparent, timely, human-approved support experience an increase in trust rather than a reduction — the CVI trajectory shows the strongest uplift in the simulation at this stage. The principle is straightforward: a retained SME customer who understands why the bank acted — and agreed to it — has measurably higher lifetime value than one retained through unexplained intervention."
+        },
+        {
+          "label": "Take no proactive action — wait for the customer to raise a concern or show clear signs of leaving before responding.",
+          "explanation": "Waiting means the intervention arrives after the window for effective action has already closed. Without early risk detection, the system cannot identify the behavioural signals that precede visible churn — falling transaction frequency, shifts in cash flow usage, reduced feature engagement. By the time a customer raises a concern directly, disengagement has become entrenched and recovery is materially more expensive. At £100K, AI costs are minimal, but the timing gap is commercially decisive: early intervention at low cost consistently outperforms late recovery at high cost. The £2M revenue loss reflects the value of the missed intervention window — and the CVI decline is the compounding consequence of not supporting the relationship when it had the most leverage."
+        }
+      ]
+    },
+    {
+      "stage": "Loyalty",
+      "prompt": "The SME relationship is established. The bank is now deciding how AI will shape the customer's long-term experience — always-on intelligence that surfaces insights, anticipates needs, and positions the bank as a genuine business partner. The key decision is what the AI is optimised for: the customer's financial success, the bank's short-term revenue targets, or a templated approximation of personalisation.",
+      "options": [
+        {
+          "label": "Orient the AI around bank revenue extraction — upsell triggers, cross-sell prompts, and fee-generating actions prioritised by the model's commercial objective.",
+          "explanation": "Optimising AI for commercial extraction builds misaligned incentives directly into the system. The AI learns to maximise bank-side metrics — upsell rates, cross-sell conversion, fee revenue — rather than customer financial health. At £1M, the cost covers commercial trigger processing rather than genuine advisory capability. SME customers at the Loyalty stage have enough experience with AI-enabled banking to distinguish recommendations that serve their interests from those that serve the bank's. When that distinction becomes apparent — which it does quickly — trust erodes, advocacy collapses, and customers begin evaluating alternatives. The CVI reflects this: a short-term revenue increase that reverses into structural long-term value destruction that compounds for as long as the relationship continues."
+        },
+        {
+          "label": "Orient the AI around the SME's financial success — insights, support, and recommendations designed to help the customer's business grow, with bank revenue as the downstream consequence of a genuine partnership.",
+          "explanation": "Orienting AI around the customer's financial success is both the right design and the highest-return decision in this round. By aligning the AI with the SME's goals — surfacing cash flow insights, flagging growth opportunities, providing support that genuinely helps the customer's business — the bank creates the conditions for advocacy and compounding lifetime value. At £0.8M, this is the lowest-cost loyalty approach in this round. Serving customer outcomes costs less and earns more than extraction. The CVI closes at its highest value in the simulation. Customers who believe the bank's AI serves their interests trust the institution, expand usage, refer other businesses, and demonstrate the lowest churn rate across the full journey."
+        },
+        {
+          "label": "Use templated personalisation at scale — rules-based content with an AI-style conversational wrapper, presented as intelligent personalisation but driven by static segmentation logic.",
+          "explanation": "Templated personalisation creates an experience that looks like AI but does not deliver it. The system generates natural-language outputs from static segmentation logic — it cannot adapt to the customer's actual situation, financial state, or evolving priorities. At £400K, the cost is minimal, but the trust erosion is structural. SME customers who have received genuine AI-guided support across the preceding six stages are sensitive to the quality difference — the degradation is detectable, and the trust response is measurable. The CVI stagnates and falls against the Optimal AI Experience path, costing £3.5M in foregone compounding revenue."
+        }
+      ]
+    }
+  ]
+}

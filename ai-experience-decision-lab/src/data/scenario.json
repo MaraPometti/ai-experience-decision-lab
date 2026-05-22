@@ -1,8 +1,31 @@
 {
   "scenarioId": "sme-ai-leadership-sim",
   "scenarioTitle": "AI Experience Decision Lab",
-  "scenarioSubtitle": "Designing an AI-enabled SME customer journey",
-  "description": "Participants make AI leadership decisions across the customer journey and see how those choices affect customer economic value over time.",
+  "scenarioSubtitle": "Designing an AI-powered SME banking journey — one decision at a time",
+  "description": "Consider Aisha — a restaurant owner and SME banking customer who represents the high-potential, underserved SME segment your bank is targeting. Her challenges — cash flow uncertainty, working capital pressure, FX costs on supplier invoices, and a bank that has never treated her as anything more than a transaction — are typical of growing SME businesses. Now you design the AI decisions that will shape the journey for customers like Aisha. Seven stages. Three choices each. The right answer is rarely the most obvious one.",
+  "simulationConfig": {
+    "pilotDurationMonths": 12,
+    "startingBudget": 8000000,
+    "startingRevenueBase": 250000000,
+    "startingCustomerValueIndex": 60,
+    "startingCEI": 58,
+    "startingTrust": 62,
+    "startingAdoption": 40,
+    "currency": "GBP",
+    "maxRevenueUpliftPct": 10,
+    "maxCustomerValueIndex": 112,
+    "maxCEI": 122,
+    "maxTrust": 94,
+    "maxAdoption": 81
+  },
+  "kpiWeights": {
+    "revenue": 0.3,
+    "customerValue": 0.25,
+    "cei": 0.15,
+    "trust": 0.15,
+    "adoption": 0.1,
+    "budgetDiscipline": 0.05
+  },
   "journeyStages": [
     "Acquisition",
     "Onboarding",
@@ -12,195 +35,1244 @@
     "Retention",
     "Loyalty"
   ],
-  "baselinePath": [10, 18, 22, 24, 22, 18, 15],
-  "bestPath":     [22, 38, 52, 68, 78, 88, 92],
-  "worstPath":    [ 6,  8, 10, 11,  7,  3,  2],
+  "baselinePath": [
+    10,
+    18,
+    22,
+    24,
+    22,
+    18,
+    15
+  ],
+  "bestPath": [
+    22,
+    38,
+    50,
+    60,
+    70,
+    80,
+    93
+  ],
+  "worstPath": [
+    6,
+    9,
+    10,
+    11,
+    9,
+    3,
+    2
+  ],
   "rounds": [
     {
       "id": 1,
       "stageIndex": 0,
       "stage": "Acquisition",
-      "title": "How should we use AI in SME acquisition emails?",
-      "prompt": "The bank wants to use AI to improve how it reaches and attracts SME customers. Should AI personalise every marketing message, focus only on high-value prospects, or be left out entirely?",
+      "title": "SME customers like Aisha are looking for a bank that understands their business. How does the bank find them first?",
+      "tradeoffTagline": "💸 Inference cost vs 🎯 Acquisition quality — the CLV certainty problem",
+      "prompt": "Aisha, like many growing SME owners, has run her restaurant for six years and outgrown her current bank — no relationship, no intelligence, no real support for a growing SME. Last week she saw outreach from three banks. She opened one of them. The bank must decide how much AI inference to invest in reaching SME prospects like Aisha, whose lifetime value is still entirely unknown. Overspend here and the budget is unavailable at Engagement and Expansion — where the customer's value is proven and AI investment generates 4–8x the return.",
       "bestOptionId": "B",
+      "optionDisplayOrder": [
+        "A",
+        "B",
+        "C"
+      ],
       "options": [
         {
           "id": "A",
-          "label": "Use AI to personalise every email for every SME customer",
-          "pathImpact": [6, 3, 0, -1, -2, -2, -1],
-          "scoreImpact": { "cei": 4, "trust": 2, "cost": -7, "retention": 0 },
-          "explanation": "Every email becomes more relevant, but acquisition is not where AI adds the most value. The cost of running AI on every contact reduces efficiency and creates a small drag on later stages."
+          "label": "Personalise every prospect's outreach individually with a frontier LLM — maximum AI cost applied before knowing if any prospect will convert — their business name, sector, and growth stage, individually generated. Every prospect receives the same level of model inference regardless of conversion likelihood.",
+          "pathImpact": [
+            6,
+            2,
+            0,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "scoreImpact": {
+            "cei": 3,
+            "trust": 2,
+            "cost": -6,
+            "retention": 0
+          },
+          "kpiRationale": {
+            "revenue": "Acquisition converts but over-spend at lowest CLV certainty drains budget from Engagement and Expansion stages.",
+            "trust": "Named messaging builds modest trust but not meaningfully better than a well-crafted sector template.",
+            "cost": "Frontier inference at £0.08 per prospect is four times the cost of templates with marginal conversion uplift.",
+            "retention": "No direct retention effect — the relationship has not yet begun at acquisition stage.",
+            "cei": "Marginal message quality improvement over templates does not translate to meaningfully higher customer economic value."
+          },
+          "businessImpact": {
+            "aiSpend": 1200000,
+            "budgetDelta": -1200000,
+            "revenueLiftPct": 0.32,
+            "revenueDelta": 800000,
+            "customerValueDelta": 2,
+            "ceiDelta": 3,
+            "trustDelta": 2,
+            "adoptionDelta": 2,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "weak",
+            "trust": "moderate",
+            "adoption": "moderate"
+          },
+          "insightExperience": "Customers like Aisha received a message that named their business and referenced their sector. They opened it. Across 15,000 SME prospects — each with individually generated content — the bank spent the same per-prospect cost regardless of conversion signal.",
+          "insightCostDrivers": "At £0.08 per prospect, the bank spent £1.2M on acquisition inference — at the stage of lowest CLV certainty in the entire simulation. The frontier model budget consumed here is unavailable at Engagement, where a CFO agent catching a customer's cash flow crisis generates £3.5M in retained lifetime value. The three-layer framework is explicit: match inference investment to CLV certainty. At acquisition, certainty is zero.",
+          "insightRevenue": "The bank acquired customers — but spent £800K more than Option B to do it. That £800K compounds negatively: it is not available to invest in the engagement and expansion stages where proven CLV justifies frontier model spend. Revenue trail runs below the optimal path from Engagement onward.",
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "B",
+            "reason": "Reaches SME prospects like Aisha but at three times the cost per prospect, with no CLV signal to justify frontier inference. The quality of the acquired customer is not better — just the quality of the message."
+          },
+          "explanation": "Running frontier inference per prospect mistakes AI effort for AI value. At acquisition, the bank has no reliable CLV signal for any individual prospect. The cost per inference (£0.08) produces a marginally better message than a well-crafted sector template (£0.02) — but the revenue consequence of that margin is negligible. What is not negligible: £800K spent here is £800K unavailable when a customer like Aisha faces a real cash flow crisis at Engagement and a CFO agent catching it is worth £3.5M in retained lifetime value. Experience decision: SME customers need to feel the bank understands their world — not that it knows their name. Architecture decision: template automation, not frontier inference. Commercial decision: the inference cost of £0.08 per prospect cannot be recovered from acquisition conversion rates alone. The right model runs where value is certain."
         },
         {
           "id": "B",
-          "label": "Use AI to personalise only the most important messages and high-value prospects",
-          "pathImpact": [8, 5, 3, 2, 1, 1, 1],
-          "scoreImpact": { "cei": 8, "trust": 3, "cost": -2, "retention": 1 },
-          "explanation": "This balances relevance with cost. The right customers get a personalised experience, and the benefit carries through into onboarding, activation, and beyond."
+          "label": "Build AI-crafted marketing templates for each SME segment — The LLM drafts and refines the templates; simple automation delivers basic personalisation at scale. SME prospects receive outreach that speaks their world — segmented by business type, growth stage, and sector context.",
+          "pathImpact": [
+            12,
+            4,
+            3,
+            2,
+            2,
+            2,
+            1
+          ],
+          "scoreImpact": {
+            "cei": 6,
+            "trust": 3,
+            "cost": 3,
+            "retention": 0
+          },
+          "kpiRationale": {
+            "revenue": "Budget discipline preserves £800K for later stages where proven CLV makes AI investment pay back at 4–8x.",
+            "trust": "Sector-specific messaging makes prospects feel understood without expensive per-prospect inference.",
+            "cost": "£0.02 per prospect achieves 85% of frontier conversion quality at 25% of the cost.",
+            "retention": "No direct retention effect — the relationship has not yet begun at acquisition stage.",
+            "cei": "Preserved budget for high-CLV stages compounds total customer economic value across the full journey."
+          },
+          "businessImpact": {
+            "aiSpend": 400000,
+            "budgetDelta": -400000,
+            "revenueLiftPct": 0.72,
+            "revenueDelta": 1800000,
+            "customerValueDelta": 5,
+            "ceiDelta": 6,
+            "trustDelta": 3,
+            "adoptionDelta": 4,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "insightExperience": "Customers like Aisha received a message that read: 'We work with growing restaurant businesses across London — here's how we support businesses at your stage.' It didn't name their specific business. It understood their world. They opened it. The bank spent £400K instead of £1.2M.",
+          "insightCostDrivers": "Template personalisation at £0.02 per prospect achieves 85% of the conversion impact of frontier inference at 25% of the cost. At acquisition — where every prospect's CLV is unknown — the marginal experience value of individually generated AI content does not justify a 4x cost premium. The £800K saved is available for the Engagement stage, where the same budget funds a CFO agent that prevents high-value customers like Aisha from churning during a cash flow crisis.",
+          "insightRevenue": "Better-matched customers from budget-disciplined acquisition enter the journey with appropriate expectations. The compounding effect is structural: every pound not spent on frontier inference at acquisition can be deployed where AI generates 4–8x the return on proven CLV. The revenue advantage builds from Engagement onward.",
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "Achieves equivalent acquisition quality at one-third the cost, preserving £800K for the stages where CLV is proven and inference investment pays back at the highest rate."
+          },
+          "explanation": "This is the correct decision — and the one that requires understanding the first principle of AI economics: match inference investment to CLV certainty. At acquisition, certainty is zero. The experience decision: SME customers like Aisha need to feel the bank understands their world, not that it can generate a message with their name in it. A well-crafted sector archetype template — 'growing restaurant businesses in London' — achieves this. The architecture decision: the LLM is used to draft and refine eight excellent templates, not to run inference at scale across 15,000 prospects. The commercial decision: £0.02 per prospect, total £400K, £800K preserved for Engagement. At Engagement, that £800K funds a CFO agent that catches a customer's cash flow problem before they know it exists — and that intervention is worth £3.5M in retained lifetime value. The right model for the right moment."
         },
         {
           "id": "C",
-          "label": "Use standard campaign software with no AI personalisation",
-          "pathImpact": [-2, -3, -2, -1, -1, -1, -1],
-          "scoreImpact": { "cei": 0, "trust": 0, "cost": 1, "retention": -1 },
-          "explanation": "Without personalisation, fewer prospects engage. This reduces conversion rates and limits value across every stage of the journey."
+          "label": "Use ML scoring to rank prospects and focus AI outreach only on the top 20% most likely to convert. Direct AI-personalised outreach to the top 20%. Niche or atypical businesses like Aisha's — artisan restaurant, niche cuisine, atypical financial profile — are ranked middle tier and receive a standard campaign.",
+          "pathImpact": [
+            -4,
+            -3,
+            -2,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          "scoreImpact": {
+            "cei": 2,
+            "trust": 1,
+            "cost": -2,
+            "retention": -1
+          },
+          "kpiRationale": {
+            "revenue": "Training bias systematically excludes high-growth niche SMEs, suppressing portfolio revenue potential from stage one.",
+            "trust": "Standard campaign for middle-tier-ranked prospects signals no recognition of atypical businesses' potential.",
+            "cost": "£200K more than Option B with worse outcomes — training bias makes it more expensive and less effective.",
+            "retention": "Excluding the highest-upside SME segment weakens long-term portfolio quality and retention prospects.",
+            "cei": "Portfolio skewed toward conventional archetypes reduces total customer economic value potential of the SME book."
+          },
+          "businessImpact": {
+            "aiSpend": 600000,
+            "budgetDelta": -600000,
+            "revenueLiftPct": 0.24,
+            "revenueDelta": 600000,
+            "customerValueDelta": 1,
+            "ceiDelta": 2,
+            "trustDelta": 1,
+            "adoptionDelta": 2,
+            "retentionDelta": -1
+          },
+          "tradeoffProfile": {
+            "experience": "moderate",
+            "economics": "moderate",
+            "trust": "moderate",
+            "adoption": "low"
+          },
+          "insightExperience": "Customers like Aisha received a standard campaign. The scoring model ranked them as moderate-probability prospects — an artisan Middle Eastern restaurant, niche cuisine, and unconventional cash flow patterns didn't match the profiles in the training data, which was built on the bank's existing SME base.",
+          "insightCostDrivers": "The scoring model cost £600K to build and deploy — £200K more than Option B, with worse acquisition outcomes. The deeper cost is structural: a model trained on existing customers systematically learns to identify businesses that look like the bank's current base. SME customers like Aisha — niche, atypical businesses — represent the highest-upside growth opportunity precisely because they are underserved by conventional banks. The model excluded them.",
+          "insightRevenue": "The bank reached the prospects it already knew. Atypical SMEs — often the highest-growth segment — were systematically deprioritised. The customer base entering the journey skews toward conventional archetypes. The innovation and growth in the bank's SME portfolio is suppressed from stage one.",
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Costs £200K more than Option B with weaker outcomes — and the scoring model's training bias systematically excludes the highest-potential, most underserved SME segment."
+          },
+          "explanation": "Lead scoring sounds like the most sophisticated approach. It isn't — not without addressing the model's training bias. The ML model was trained on the bank's existing customers: businesses it has already acquired, already served, and already selected through previous acquisition campaigns. It has learned to identify prospects that look like those businesses. Niche businesses like Aisha's artisan restaurant — niche cuisine, unconventional seasonality, atypical working capital patterns — don't match. They are ranked as moderate-probability, receive a standard campaign, and open accounts elsewhere. The systematic exclusion of atypical, high-upside SMEs compounds: the bank's portfolio becomes progressively more conventional, more commoditised, and more exposed to competitors who build acquisition models that seek out the underserved segment instead of replicating the existing one."
         }
-      ]
+      ],
+      "aishaContext": "Aisha, like many growing SME owners, has run her restaurant for six years and outgrown her current bank — no relationship, no intelligence, no real support for a growing SME. Last week she saw outreach from three banks. She opened one of them."
     },
     {
       "id": 2,
       "stageIndex": 1,
       "stage": "Onboarding",
-      "title": "How should the AI support onboarding?",
-      "prompt": "The bank is setting up how AI will support new SME customers during onboarding. Should AI handle the whole process automatically, guide customers step by step, or stay out of it entirely?",
-      "bestOptionId": "B",
+      "title": "The first real moment with the bank for customers like Aisha. Does the AI build trust or erode it?",
+      "tradeoffTagline": "⚡ Speed and automation vs 🤝 Trust formation vs 💰 Unit economics",
+      "prompt": "Consider an SME like Aisha who has just applied. Her business structure is more complex than a standard SME: she has a personal account, a trading account for the restaurant, and a second entity registered for a catering operation she runs on the side. The automated identity checks flag an anomaly — a mismatch between the two entities. This is the most formative moment in the relationship. The bank must decide how its AI handles the next thirty minutes of the customer's experience.",
+      "bestOptionId": "C",
+      "optionDisplayOrder": [
+        "A",
+        "B",
+        "C"
+      ],
       "options": [
         {
           "id": "A",
-          "label": "Automate the full onboarding process — fast, but with no explanation or human backup",
-          "pathImpact": [0, 6, -5, -8, -6, -6, -5],
-          "scoreImpact": { "cei": -2, "trust": -4, "cost": 3, "retention": -2 },
-          "explanation": "Onboarding is fast, but customers are left without clear explanations at a critical moment. Initial efficiency quickly turns into lost confidence — hurting activation, engagement, and retention throughout the journey."
+          "label": "Fully automate the onboarding process end-to-end — the AI handles identity verification, entity checks, and account setup with maximum speed and minimal manual steps. The system processes applications automatically, resolves anomalies algorithmically, and configures accounts without human intervention. Customers receive confirmation when complete. The process is fast and handles high volumes efficiently.",
+          "pathImpact": [
+            0,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -2
+          ],
+          "scoreImpact": {
+            "cei": -2,
+            "trust": -7,
+            "cost": 1,
+            "retention": -2
+          },
+          "kpiRationale": {
+            "revenue": "Trust destroyed at onboarding compounds through every subsequent stage in lower adoption and weaker engagement.",
+            "trust": "Silent anomaly resolution with no explanation violates AIX explainability at the most formative moment of the relationship.",
+            "cost": "Cheapest per-onboarding cost but support spike and lower activation erode the saving within months.",
+            "retention": "Early trust deficit raises churn probability at every subsequent stage — the most expensive outcome in the simulation.",
+            "cei": "Lower activation and engagement depth from day one suppresses total customer economic value across the journey."
+          },
+          "businessImpact": {
+            "aiSpend": 800000,
+            "budgetDelta": -800000,
+            "revenueLiftPct": -0.48,
+            "revenueDelta": -1200000,
+            "customerValueDelta": -5,
+            "ceiDelta": -2,
+            "trustDelta": -7,
+            "adoptionDelta": -3,
+            "retentionDelta": -2
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "moderate",
+            "trust": "negative",
+            "adoption": "low"
+          },
+          "insightExperience": "For customers like Aisha, the application completes in 4 minutes. Two weeks later, a payment instruction is automatically queried. They don't know why — the same system that processed onboarding silently is now silently querying transactions. Support contact rates double in the first month.",
+          "insightCostDrivers": "At £57 per onboarding, this is cheaper than Option C by £21 per customer. Across 14,000 annual SME onboardings, the saving is £294K. The compounding cost of the trust deficit — lower activation, lower feature adoption, higher support contact rate — exceeds that saving by Engagement. The cost-per-interaction metric looked good. The unit economics of the relationship deteriorated.",
+          "insightRevenue": "Trust destroyed at onboarding does not recover. The AIX Trust dimension — the experience must be reliable, explainable, and safe — is violated at the most formative stage of the relationship. Lower adoption, weaker engagement, and a support cost spike compound through every stage that follows.",
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "C",
+            "reason": "Saves £21 per customer at onboarding, then loses it back in higher support costs, lower activation rates, and weaker lifetime value — the trust deficit is the most expensive outcome in the simulation."
+          },
+          "explanation": "Speed without explainability is the core failure at this stage. The AI resolves the anomaly correctly — but customers like Aisha never know what was flagged, what decision was made, or on what basis. At the moment they form their first real impression of the bank's intelligence, the experience is opaque. The AIX framework is explicit on this: Trust requires the experience to be reliable, explainable, and safe — especially for high-stakes financial decisions. Agency & Control requires that the customer understands what the AI is doing and why. Full automation without transparency violates both dimensions at the moment they matter most. The cost saving of £21 per customer at onboarding is real. The cost of the trust deficit that follows — in higher support contact rates, lower feature activation, weaker engagement depth, and reduced resilience to competitive pressure at Retention — is not."
         },
         {
           "id": "B",
-          "label": "Guide customers through onboarding with AI, explain each step clearly, and offer human help when needed",
-          "pathImpact": [0, 12, 10, 9, 7, 6, 6],
-          "scoreImpact": { "cei": 9, "trust": 5, "cost": -1, "retention": 3 },
-          "explanation": "This makes onboarding smooth without leaving customers confused. Clear guidance and easy access to human support build confidence — and that confidence carries through every stage, all the way to loyalty."
+          "label": "Assign a dedicated relationship manager to personally guide each new SME customer through the full onboarding process from start to finish. The relationship manager handles the full process — AI-assisted but human-led. Customers like Aisha have one named contact, full transparency, and an advocate inside the bank from day one.",
+          "pathImpact": [
+            0,
+            10,
+            7,
+            3,
+            1,
+            -1,
+            -2
+          ],
+          "scoreImpact": {
+            "cei": 4,
+            "trust": 8,
+            "cost": -7,
+            "retention": 1
+          },
+          "kpiRationale": {
+            "revenue": "Exceptional initial trust, but budget drain prevents investment in Engagement and Expansion where CLV is proven.",
+            "trust": "Named specialist with full transparency creates the highest possible trust outcome at onboarding.",
+            "cost": "£157 per customer is 2x Option C — a premium that cannot scale across 14,000 annual SME onboardings.",
+            "retention": "Strong early trust is a retention asset, but budget consumed weakens later-stage retention infrastructure.",
+            "cei": "High initial CEI, but budget drain from unsustainable unit economics suppresses total journey CEI."
+          },
+          "businessImpact": {
+            "aiSpend": 2200000,
+            "budgetDelta": -2200000,
+            "revenueLiftPct": 0.8,
+            "revenueDelta": 2000000,
+            "customerValueDelta": 4,
+            "ceiDelta": 4,
+            "trustDelta": 8,
+            "adoptionDelta": 6,
+            "retentionDelta": 1
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "weak",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "insightExperience": "For customers like Aisha, the onboarding is exceptional. The relationship specialist calls within 20 minutes, explains the entity mismatch clearly, resolves it in a single conversation, and follows up to confirm everything is configured correctly. Customers tell their networks the bank is different.",
+          "insightCostDrivers": "At £157 per onboarding — compared to £78 for Option C — the premium is real. Across 14,000 annual SME onboardings, the additional cost versus Option C is £1.1M per year. The experience quality is high. The question is whether the bank can deploy a dedicated specialist to 14,000 customers annually and still sustain the unit economics of the SME segment. The answer, at scale, is no — and the budget consumed here reduces what is available for Engagement and Expansion, where proven CLV justifies investment.",
+          "insightRevenue": "Excellent early trust — but the model does not scale. By Expansion, the budget drain from an unsustainable onboarding model has reduced the bank's capacity to invest in the AI intelligence that drives each SME's most valuable moment: the decision to expand their business.",
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": "C",
+            "reason": "Creates the best initial trust — but at a per-customer cost that breaks the unit economics of the SME segment at scale, and consumes budget that should be reserved for Engagement and Expansion."
+          },
+          "explanation": "The experience quality is not in question — a dedicated relationship specialist creates the highest trust outcome at onboarding. The economics are. The bank serves 14,000 SME customers annually. A dedicated specialist for each costs £157 per onboarding, or £2.2M per year in onboarding cost alone. That is £1.1M more than Option C — and £1.1M unavailable for the CFO agent at Engagement that prevents cash flow crises, or the expansion recommendation system that helps customers like Aisha evaluate their next business move. The three-layer framework is explicit: the architecture decision must sustain margin, not just maximise experience at individual touchpoints. A premium concierge model is the right answer for a private bank serving 500 high-net-worth clients. It is the wrong answer for a digital SME bank trying to serve 50,000 customers with positive unit economics."
         },
         {
           "id": "C",
-          "label": "Keep the existing manual onboarding process with standard digital forms",
-          "pathImpact": [0, -5, -4, -3, -2, -2, -2],
-          "scoreImpact": { "cei": -2, "trust": -1, "cost": 0, "retention": 0 },
-          "explanation": "Avoiding AI avoids short-term risk, but leaves a slow and fragmented experience in place. The impact shows immediately at onboarding and compounds through every stage that follows."
+          "label": "AI automates standard onboarding tasks — document collection, entity verification, account configuration — and escalates to a human reviewer only when the system flags a genuine exception. The AI handles the routine processing that doesn't require reasoning — fetching information, validating documents, populating forms. When something genuinely unusual is flagged (like a complex multi-entity structure), a human reviews and explains. Customers are kept informed throughout the process.",
+          "pathImpact": [
+            0,
+            16,
+            12,
+            9,
+            7,
+            6,
+            5
+          ],
+          "scoreImpact": {
+            "cei": 9,
+            "trust": 6,
+            "cost": 0,
+            "retention": 3
+          },
+          "kpiRationale": {
+            "revenue": "Trust built transparently at the most formative stage compounds into higher adoption, engagement, and lifetime value.",
+            "trust": "Explaining every flagged anomaly and routing exceptions to human reviewers satisfies the AIX explainability requirement.",
+            "cost": "£78 per customer — £21 above full automation and £79 below the specialist model — the scalable balance.",
+            "retention": "Transparent trust formation at onboarding is the single most powerful long-term retention investment in the simulation.",
+            "cei": "Highest single-stage leverage point — transparent onboarding compounds into higher adoption and customer economic value."
+          },
+          "businessImpact": {
+            "aiSpend": 1100000,
+            "budgetDelta": -1100000,
+            "revenueLiftPct": 1.4,
+            "revenueDelta": 3500000,
+            "customerValueDelta": 8,
+            "ceiDelta": 9,
+            "trustDelta": 6,
+            "adoptionDelta": 7,
+            "retentionDelta": 3
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "insightExperience": "Customers like Aisha are guided through each step. When entity documentation triggers a review, the system explains what has been flagged and routes the case to a human reviewer. The reviewer calls within 25 minutes and resolves the issue transparently. Customers know what happened and why. That transparency — at the most formative moment — becomes the foundation of the relationship.",
+          "insightCostDrivers": "At £78 per onboarding, this is £21 more per customer than full automation and £79 less than the dedicated specialist model. The AI handles the explainability and routing; humans handle the exception. The marginal cost of the human review step is what produces the trust outcome. The AI does not replace the human at the high-stakes moment — it identifies when the human is needed and routes efficiently.",
+          "insightRevenue": "Trust built at onboarding compounds through every stage that follows. Customers who understand what the bank's AI did — and why — adopt more services, engage more deeply, and are significantly more resilient to competitive pressure at Retention and Loyalty. This is the highest single-stage leverage point in the simulation.",
+          "compareSummary": {
+            "strongerThan": "B",
+            "weakerThan": null,
+            "reason": "At £79 less per customer than the specialist model, it delivers comparable trust outcomes through intelligent design — explainability built into the AI, human escalation for genuine exceptions — and preserves budget for Engagement and Expansion."
+          },
+          "explanation": "This is the correct decision — and the one that embeds AIX correctly at the most formative stage of the relationship. Contextual Specificity: the AI understands that complex business structures — like Aisha's dual-entity setup — are common among SMEs and adapts accordingly. Intent Alignment: the system is optimised for the customer's outcome (completing onboarding with confidence) not the bank's operational efficiency metric. Trust: every decision is explained, every exception is escalated to a human, and customers like Aisha know what happened and why. Agency & Control: customers remain informed throughout — the AI acts within visible, understandable boundaries. At £78 per onboarding, the model is scalable: the AI handles the majority of the journey; human expertise is deployed only where it changes the outcome. The cost difference versus full automation is £21 per customer. The trust difference is the entire subsequent trajectory of the relationship."
         }
-      ]
+      ],
+      "aishaContext": "Aisha — representing a common complexity among growing SMEs — has applied this morning. Her business structure involves a personal account, a trading account for the restaurant, and a second entity for a catering side business. The automated checks have flagged an anomaly. She is watching a progress spinner."
     },
     {
       "id": 3,
       "stageIndex": 2,
       "stage": "Activation",
-      "title": "How proactive should the AI be in helping the customer get started?",
-      "prompt": "The SME customer has just onboarded and needs to start using the service. Should AI actively guide them, respond to their behaviour, or leave them to find their own way?",
-      "bestOptionId": "B",
+      "title": "The customer's first real transactions are happening. How does the bank's AI support their earliest banking activity?",
+      "tradeoffTagline": "⏱️ Inference timing vs 📊 Guidance relevance — the context-trigger problem",
+      "prompt": "SME customers like Aisha have opened their accounts. They need to configure core features: payroll for their employees, recurring payment schedules for suppliers (often invoicing in foreign currency), and automatic cash flow alerts tied to payroll dates. Many have never set up these features with a bank before. The bank must decide when and how its AI provides guidance — and how much that inference costs per interaction.",
+      "bestOptionId": "A",
+      "optionDisplayOrder": [
+        "A",
+        "B",
+        "C"
+      ],
       "options": [
         {
           "id": "A",
-          "label": "Immediately push AI-driven prompts and recommendations to all new customers",
-          "pathImpact": [0, 0, 7, 2, -3, -4, -3],
-          "scoreImpact": { "cei": 1, "trust": -2, "cost": -1, "retention": -2 },
-          "explanation": "More customers take action early, but the constant prompts feel pushy. Trust starts to erode and the initial gain reverses through engagement and retention."
+          "label": "The AI watches for meaningful moments — when a customer does something new like their first payroll run or a large supplier payment — and offers relevant guidance only then. Between these moments, the system stays quiet rather than sending constant notifications. Guidance is stored and refreshed only when the customer's situation actually changes — for example, when cash flow drops below the payroll threshold or a new expense pattern appears. This means customers get help when they need it, not when the system schedules it.",
+          "pathImpact": [
+            0,
+            0,
+            13,
+            9,
+            6,
+            4,
+            3
+          ],
+          "scoreImpact": {
+            "cei": 8,
+            "trust": 4,
+            "cost": 2,
+            "retention": 2
+          },
+          "kpiRationale": {
+            "revenue": "Contextually timed guidance drives feature completion — activated features generate measurably higher lifetime value.",
+            "trust": "Guidance arriving precisely when needed feels earned and relevant rather than scheduled and intrusive.",
+            "cost": "Behaviour-triggered inference runs at 35% frequency versus session-by-session, achieving 40% of the cost.",
+            "retention": "Customers activating payroll, FX, and alerts in month one show materially higher 12-month retention probability.",
+            "cei": "Strong feature activation is the highest predictor of long-term customer economic value — context timing is the lever."
+          },
+          "businessImpact": {
+            "aiSpend": 700000,
+            "budgetDelta": -700000,
+            "revenueLiftPct": 1,
+            "revenueDelta": 2500000,
+            "customerValueDelta": 6,
+            "ceiDelta": 8,
+            "trustDelta": 4,
+            "adoptionDelta": 6,
+            "retentionDelta": 2
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "insightExperience": "Customers like Aisha set up payroll with a step-by-step walkthrough that appears precisely when they start the process. When they initiate their first euro supplier payment, the AI surfaces an explanation of the bank's FX rate and alternatives — exactly when they need it. Between those moments, the system is quiet. The guidance feels earned, not intrusive.",
+          "insightCostDrivers": "At £0.04 per interaction, the behavioral trigger model runs inference only when a customer's actions signal a new context — a new feature, a new transaction type, a behaviour change. Between triggers, cached guidance is served. The result: AI runs at 35% of the frequency of a session-by-session model, at 40% of the cost, with no perceptible quality loss for the customer. The budget saved is available for the CFO agent at Engagement.",
+          "insightRevenue": "Customers who activate the right features — payroll, FX, alerts — in their first month generate measurably higher engagement depth and lifetime value. The activation-retention linkage is explicit in the CEI model: strong activation produces approximately 7x higher retention probability (Amplitude, 2024). Guidance that arrives at the right moment drives completion; guidance that arrives on a schedule often arrives at the wrong moment.",
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": null,
+            "reason": "Delivers the same contextual intelligence as Option B at 44% of the cost — the inference trigger is customer behaviour, not session start. AI runs when the context has changed, not on a fixed schedule."
+          },
+          "explanation": "This is the correct decision — and it requires understanding the most important cost architecture principle in LLM systems: inference frequency drives cost more than model quality. A session-by-session model runs inference 140,000 times per year across the SME activation base. A behaviour-triggered model runs inference when a customer does something genuinely new — approximately 49,000 times. Same model. Same quality. 35% of the inference cost. The guidance customers like Aisha receive is contextually specific (payroll help when doing payroll, FX guidance when doing FX), intentionally aligned to what they're trying to accomplish at that moment, trustworthy because it's relevant, and agency-preserving because it doesn't overwhelm them with unsolicited prompts. The £900K saved versus Option B is available for the Engagement stage — where customers will need a CFO agent to catch a cash flow problem they don't yet know is coming."
         },
         {
           "id": "B",
-          "label": "Use AI to suggest helpful next steps based on what the customer has done and what they are likely to need",
-          "pathImpact": [0, 0, 10, 8, 5, 3, 3],
-          "scoreImpact": { "cei": 8, "trust": 3, "cost": -1, "retention": 2 },
-          "explanation": "Customers get timely, relevant guidance without feeling overwhelmed. The result is strong activation that builds naturally into deeper engagement and loyalty."
+          "label": "The AI generates fresh personalised guidance every time the customer opens the app — always up-to-date, always active, regardless of whether their situation has changed. Fresh inference runs on every session, regardless of whether anything has changed in the customer's account or behaviour. Maximum guidance quality at every touchpoint.",
+          "pathImpact": [
+            0,
+            0,
+            8,
+            3,
+            -1,
+            -3,
+            -2
+          ],
+          "scoreImpact": {
+            "cei": 5,
+            "trust": 2,
+            "cost": -5,
+            "retention": 0
+          },
+          "kpiRationale": {
+            "revenue": "Guidance quality is high but prompt fatigue from irrelevant suggestions reduces feature completion and activation rates.",
+            "trust": "Frequent prompts that don't match the customer's current activity erode signal trust within two weeks.",
+            "cost": "£0.11 per interaction is 2.75x Option A — premium funds inference on sessions where context hasn't changed.",
+            "retention": "No retention benefit over Option A — prompt fatigue from irrelevance reduces the channel's long-term utility.",
+            "cei": "Early CEI strength weakens as prompt dismissal increases — fewer activated features produce lower long-term customer value."
+          },
+          "businessImpact": {
+            "aiSpend": 1600000,
+            "budgetDelta": -1600000,
+            "revenueLiftPct": 0.48,
+            "revenueDelta": 1200000,
+            "customerValueDelta": 4,
+            "ceiDelta": 5,
+            "trustDelta": 2,
+            "adoptionDelta": 4,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "weak",
+            "trust": "moderate",
+            "adoption": "moderate"
+          },
+          "insightExperience": "Customers like Aisha received high-quality guidance every time they opened the app — including on visits where they simply checked their balance or reviewed a transaction. The guidance was excellent. It was also often irrelevant to what they were actually doing. After two weeks, they started dismissing the prompts without reading them.",
+          "insightCostDrivers": "At £0.11 per interaction and 400 interactions per SME customer in year one, this approach costs £44 per customer annually in activation inference alone. Option A costs £16. The additional £28 per customer — £392K across the SME activation base — funds inference on sessions where nothing has changed in the customer's context and the guidance adds no marginal value.",
+          "insightRevenue": "The guidance quality is not in question. The timing is. A customer who dismisses guidance prompts after two weeks of irrelevant suggestions activates fewer features — not because the AI was unhelpful, but because the signal-to-noise ratio eroded the utility of the channel. The CVI trajectory shows early strength that weakens as prompt fatigue sets in.",
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "A",
+            "reason": "Produces better guidance quality than scheduled updates — but spends £900K more than Option A to run inference on sessions where the customer's context hasn't changed and the guidance adds no marginal value."
+          },
+          "explanation": "The highest-capability model at every session is a technology preference applied without cost discipline. The inference cost of £0.11 per interaction is 2.75x Option A. The quality difference per interaction is marginal for routine sessions — a customer checking their balance does not benefit from a reasoning model generating fresh contextual guidance. The cost difference is not marginal: across 140,000 activation interactions per year, the model choice adds £900K in inference cost for guidance that frequently arrives when the customer's context hasn't changed. The compounding consequence: £900K unavailable at Engagement, where the same budget funds a CFO agent that catches a customer's cash flow crisis before they know it exists. Prompt fatigue compounds the investment: customers who dismiss irrelevant guidance don't stop dismissing it when it becomes relevant."
         },
         {
           "id": "C",
-          "label": "Leave customers to explore the product on their own, with no AI guidance",
-          "pathImpact": [0, 0, -5, -4, -2, -2, -1],
-          "scoreImpact": { "cei": -4, "trust": -1, "cost": 1, "retention": -1 },
-          "explanation": "Without guidance, many customers struggle to get started. Activation stalls and the experience never fully builds momentum through engagement."
+          "label": "The AI generates guidance on a regular schedule — every 48 hours — giving customers periodic updates on their account and next steps. Guidance updates arrive whether or not the customer has taken any new action in their account since the last update.",
+          "pathImpact": [
+            0,
+            0,
+            -4,
+            -3,
+            -2,
+            -2,
+            -1
+          ],
+          "scoreImpact": {
+            "cei": -3,
+            "trust": 0,
+            "cost": 3,
+            "retention": -1
+          },
+          "kpiRationale": {
+            "revenue": "Scheduled guidance misses the moment of first use — critical features go unconfigured and generate no revenue.",
+            "trust": "Guidance arriving 48 hours after the customer needed it signals the bank is not watching in real time.",
+            "cost": "Lowest per-interaction cost but the feature adoption gap creates more lost revenue than the saving delivers.",
+            "retention": "Unconfigured FX alerts and payroll automation reduce engagement depth and long-term retention probability.",
+            "cei": "Features never activated cannot contribute to customer economic value regardless of how well they were described."
+          },
+          "businessImpact": {
+            "aiSpend": 350000,
+            "budgetDelta": -350000,
+            "revenueLiftPct": -0.2,
+            "revenueDelta": -500000,
+            "customerValueDelta": -2,
+            "ceiDelta": -3,
+            "trustDelta": 0,
+            "adoptionDelta": -1,
+            "retentionDelta": -1
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "moderate",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "insightExperience": "Customers like Aisha received an activation guide on day one — accurate, helpful, well-written. The follow-up update arrived 48 hours later, while they were occupied with their business. The FX guidance arrived on a Tuesday morning when they weren't thinking about supplier payments. By the time they set up their euro payment schedule, they had already navigated the process themselves — the guidance arrived three days after they needed it.",
+          "insightCostDrivers": "At £0.025 per interaction, this is the cheapest activation approach. The cost saving versus Option A is £350K. The commercial consequence is a structural timing mismatch: guidance is generated on a schedule, not in response to customer behaviour. The £350K saved does not compensate for the feature adoption gap created by guidance that arrives at the wrong moment.",
+          "insightRevenue": "Customers like Aisha configured payroll correctly but never set up the FX alert for supplier payments — the guidance arrived when they weren't in that context, and they moved on. They discovered months later that they had been paying the bank's default FX spread on every euro invoice rather than the competitive rate they could have locked. The missed feature activation compounds: lower FX revenue for the bank, lower satisfaction for SME customers, support calls that could have been upsells.",
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "A",
+            "reason": "Saves £350K versus Option A but creates a structural timing mismatch — guidance arrives on a schedule, not when the customer's context signals they need it. The most critical activation features go unconfigured because the guidance missed the moment."
+          },
+          "explanation": "Scheduled guidance optimises for cost, not for impact. A 48-hour update cycle is independent of what customers are actually doing: it delivers guidance when it is convenient for the system, not when it is relevant to the customer. The AIX framework's Intent Alignment dimension is clear: the AI must surface outcomes that serve what the user is actually trying to accomplish at that moment. A scheduled update cannot do this — it can only approximate it by generating broadly relevant content on a fixed cadence. The consequence is structural: the highest-value features (FX management, cash flow alerts tied to payroll) require guidance at the exact moment of first use. Miss that moment and the feature goes unconfigured. An unconfigured FX alert is not just a missed upsell — it is a missed protection for the customer's cash flow, the very problem SME customers like Aisha consistently identify as their biggest concern."
         }
-      ]
+      ],
+      "aishaContext": "New SME customers like Aisha are making their first real transactions — running payroll, paying suppliers, managing cash between busy and quiet weeks. These first experiences shape whether they see the bank as useful or invisible."
     },
     {
       "id": 4,
       "stageIndex": 3,
       "stage": "Engagement",
-      "title": "How much autonomy should the AI have in ongoing support?",
-      "prompt": "The bank is deciding how its AI will behave day-to-day. Should the AI act on its own, work alongside the customer with clear controls, or only respond when asked?",
-      "bestOptionId": "B",
+      "title": "The bank is building an AI agent to help SMEs manage cash flow. How should it architect the intelligence layer?",
+      "tradeoffTagline": "🧠 Intelligence vs 💰 Cost Efficiency — premium reasoning where it matters, fast utility everywhere else",
+      "prompt": "SME customers like Aisha need proactive cash flow intelligence — the kind that catches a crisis six days before it hits. The bank is investing in a multi-agent system with guardrails, evaluation layers, and real-time data integration. The question is not whether to build it. It is how to architect it so the right level of intelligence runs at the right moment without burning through the inference budget.",
+      "bestOptionId": "A",
+      "optionDisplayOrder": [
+        "A",
+        "B",
+        "C"
+      ],
       "options": [
         {
           "id": "A",
-          "label": "Allow AI to act independently across most interactions and decisions, without asking for customer input",
-          "pathImpact": [0, 0, 0, 7, 5, -7, -9],
-          "scoreImpact": { "cei": 1, "trust": -3, "cost": 2, "retention": -3 },
-          "explanation": "Customers benefit in the short term, but acting without asking creates unease. Trust erodes significantly — and the damage at retention and loyalty is among the sharpest in the entire simulation."
+          "label": "Build a multi-agent system with intelligent model routing — a frontier reasoning model handles complex cash flow analysis and scenario planning, while smaller efficient models run routine alerts, summaries, and notifications. Graph-based data retrieval connects customer and bank data. Caching stores repeated patterns so the system doesn't re-compute what hasn't changed. Higher build cost, optimised inference cost per interaction.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            16,
+            12,
+            10,
+            9
+          ],
+          "scoreImpact": {
+            "cei": 10,
+            "trust": 4,
+            "cost": 2,
+            "retention": 4
+          },
+          "kpiRationale": {
+            "revenue": "Proactive cash flow intelligence converts directly to lending revenue and retention.",
+            "trust": "Predicting problems before customers notice them builds deep trust in the bank.",
+            "cost": "Higher build cost but optimised per-interaction cost through model routing and caching.",
+            "retention": "Customers who trust the AI's intelligence engage more deeply and stay longer.",
+            "cei": "Highest engagement impact — intelligent architecture delivers premium value efficiently."
+          },
+          "businessImpact": {
+            "aiSpend": 1400000,
+            "budgetDelta": -1400000,
+            "revenueLiftPct": 1.4,
+            "revenueDelta": 3500000,
+            "customerValueDelta": 8,
+            "ceiDelta": 10,
+            "trustDelta": 4,
+            "adoptionDelta": 6,
+            "retentionDelta": 4
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "insightExperience": "The system caught a cash flow gap six days before payroll. The frontier model analysed the scenario and recommended a specific working capital facility. Routine daily alerts ran on a lightweight model at minimal cost. The customer received premium intelligence at the critical moment and fast utility the rest of the time.",
+          "insightCostDrivers": "Higher build cost (£1.4M) covers the multi-agent architecture: model routing, guardrails, evaluation layers, graph retrieval, and caching infrastructure. But the per-interaction cost is optimised — frontier inference runs only for complex reasoning tasks, while 80% of daily interactions use smaller models at a fraction of the cost.",
+          "insightRevenue": "Proactive cash flow intelligence at the right moment converts directly to working capital facility revenue and builds the trust that drives long-term engagement. Customers who see the bank predict problems before they happen use more services, trust more recommendations, and stay longer.",
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": null,
+            "reason": "Delivers the highest quality intelligence at the moments that matter while managing inference cost through smart routing — the architecture matches the level of AI intelligence to the complexity of each interaction."
+          },
+          "explanation": "This is the correct architecture decision. The investment is justified by the customer value — but only if the inference cost is managed intelligently. A frontier reasoning model running on every interaction would cost 3-4x more per query without proportional quality improvement on routine tasks. The smart architecture reserves premium reasoning for the moments that actually need it: cash flow scenario analysis, risk prediction, personalised recommendations. Everything else — balance alerts, payment reminders, weekly summaries — runs on efficient smaller models. Graph-based retrieval connects customer transaction data with the bank's sector benchmarks without duplicating or re-processing. Caching means the system stores computed patterns and only re-analyses when the underlying data changes. The result: the same quality of insight at the critical moment, with 60-70% lower per-interaction cost across the full interaction volume."
         },
         {
           "id": "B",
-          "label": "Use AI to proactively help customers, but always show what it is doing and give them control over important actions",
-          "pathImpact": [0, 0, 0, 14, 12, 11, 9],
-          "scoreImpact": { "cei": 10, "trust": 5, "cost": -1, "retention": 4 },
-          "explanation": "This is the most effective approach: AI is helpful and proactive, but customers stay in control. The improvement at engagement is the largest in this stage — and it flows strongly through expansion, retention, and loyalty."
+          "label": "Deploy a single frontier reasoning model for every customer interaction — the same high-capability model runs cash flow analysis, daily alerts, payment summaries, and routine notifications. Simple architecture with no routing logic. Maximum quality at every touchpoint regardless of task complexity.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            10,
+            7,
+            4,
+            3
+          ],
+          "scoreImpact": {
+            "cei": 6,
+            "trust": 3,
+            "cost": -5,
+            "retention": 2
+          },
+          "kpiRationale": {
+            "revenue": "Good intelligence drives some revenue but high inference cost reduces net return.",
+            "trust": "Quality is high across all interactions but not noticeably better than Option A on routine tasks.",
+            "cost": "Most expensive option — frontier inference on every interaction, no optimisation.",
+            "retention": "Positive but the economics weaken the bank's ability to sustain the service.",
+            "cei": "Good engagement but the cost structure limits how broadly the bank can deploy it."
+          },
+          "businessImpact": {
+            "aiSpend": 1800000,
+            "budgetDelta": -1800000,
+            "revenueLiftPct": 0.8,
+            "revenueDelta": 2000000,
+            "customerValueDelta": 6,
+            "ceiDelta": 6,
+            "trustDelta": 3,
+            "adoptionDelta": 5,
+            "retentionDelta": 2
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "weak",
+            "trust": "moderate",
+            "adoption": "moderate"
+          },
+          "insightExperience": "The system caught the cash flow gap and produced a high-quality recommendation. But it also ran the same expensive model to generate a routine balance summary and a payment reminder — tasks that didn't need frontier reasoning.",
+          "insightCostDrivers": "Simpler to build (no routing logic) but significantly more expensive to run. Every interaction — from complex scenario analysis to a simple alert — uses the same frontier model. At scale, 80% of inference cost goes to tasks that a smaller model handles equally well.",
+          "insightRevenue": "Good quality intelligence but the per-interaction cost at scale erodes the margin the engagement was supposed to create. The system works but doesn't scale efficiently.",
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "A",
+            "reason": "Delivers good intelligence quality but at significantly higher per-interaction cost — no routing means every task runs at frontier cost regardless of complexity."
+          },
+          "explanation": "This approach delivers quality but misses the core architectural insight: not every interaction needs the same level of intelligence. A daily balance alert does not require a frontier reasoning model. A payment reminder does not need scenario analysis capabilities. Running the same expensive model on every task is like using a Formula 1 car for the school run — it works, but the cost per mile makes no sense. At engagement volumes (thousands of interactions per customer per year across the SME base), the difference between smart routing and blanket frontier inference is the difference between a system that scales profitably and one that becomes more expensive as it succeeds."
         },
         {
           "id": "C",
-          "label": "Keep AI in the background — only showing information when the customer asks for it",
-          "pathImpact": [0, 0, 0, -5, -5, -4, -3],
-          "scoreImpact": { "cei": -2, "trust": 0, "cost": 1, "retention": 0 },
-          "explanation": "AI is underused at the stage where it would add the most value. The experience feels static and limited — and engagement, expansion, and retention all take a compounding hit."
+          "label": "Minimise AI complexity — use lightweight models and rule-based triggers for all customer interactions. Template alerts for cash flow thresholds, scheduled summaries, and standard notifications. Fast to deploy, low inference cost, but limited to pattern-matching on obvious signals.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            -5,
+            -4,
+            -4,
+            -3
+          ],
+          "scoreImpact": {
+            "cei": -2,
+            "trust": -1,
+            "cost": 3,
+            "retention": -4
+          },
+          "kpiRationale": {
+            "revenue": "Generic alerts do not drive lending revenue or deepen product usage.",
+            "trust": "Customers see a basic system that doesn't understand their specific situation.",
+            "cost": "Lowest cost option — but savings do not offset lost engagement value.",
+            "retention": "Customers who don't see intelligent support are more likely to evaluate competitors.",
+            "cei": "Lowest engagement impact — rule-based triggers cannot build the relationship."
+          },
+          "businessImpact": {
+            "aiSpend": 500000,
+            "budgetDelta": -500000,
+            "revenueLiftPct": -0.4,
+            "revenueDelta": -1000000,
+            "customerValueDelta": -3,
+            "ceiDelta": -2,
+            "trustDelta": -1,
+            "adoptionDelta": -2,
+            "retentionDelta": -4
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "moderate",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "insightExperience": "The system sent a standard alert when the account balance dropped below a fixed threshold — three days after the cash flow gap had already become a problem. It could not analyse the scenario, predict the timing, or recommend a specific action.",
+          "insightCostDrivers": "Cheapest option at £500K with the lowest per-interaction cost. But the system can only trigger on simple rules — it cannot reason about complex cash flow scenarios, predict timing, or generate contextual recommendations.",
+          "insightRevenue": "The cost saving is real but the engagement failure is larger. Customers who receive generic threshold alerts instead of intelligent analysis do not deepen their relationship with the bank. The system saves money on inference and loses it on customer value.",
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "A",
+            "reason": "Cheapest to build and run but the system cannot reason about complex scenarios — it catches obvious problems after they happen, not subtle ones before they form."
+          },
+          "explanation": "This option treats engagement AI as a cost to minimise rather than a value to optimise. Lightweight models and rule-based triggers can handle simple notifications — but the critical moment for SME customers is not a balance alert. It is the cash flow scenario that the rules cannot see: three invoices outstanding, supplier costs rising, payroll in eight days, and a pattern that only emerges when you combine signals across time. That requires reasoning. The £900K saved versus Option A is real. The customer engagement lost — and the lending revenue, cross-sell opportunity, and retention probability that come with genuine intelligence — is worth multiples of that saving."
         }
-      ]
+      ],
+      "aishaContext": "Customers like Aisha are three months into the relationship. Cash flow is getting tight — outstanding invoices, rising supplier costs, payroll approaching. The AI agent needs to see this coming and act. But every inference costs money. The architecture decision determines whether this system scales or collapses under its own cost."
     },
     {
       "id": 5,
       "stageIndex": 4,
       "stage": "Expansion",
-      "title": "How should AI shape growth offers and recommendations?",
-      "prompt": "The SME is now an active customer. The bank wants to use AI to identify growth opportunities and offer relevant products. How should it approach this?",
-      "bestOptionId": "B",
+      "title": "The customer is ready for more products. How deeply should the AI personalise its recommendations — and where are the compliance boundaries?",
+      "tradeoffTagline": "🎯 Personalisation vs 🔒 Compliance — deeper context means better recommendations but greater data exposure",
+      "prompt": "SME customers like Aisha are at a growth inflection point. She needs a working capital extension to open her second restaurant. The bank's AI can see signals in her data that suggest exactly what she needs and when. But accessing that depth of customer context raises questions about data governance, regulatory compliance, and how much the customer knows about what the bank can see.",
+      "bestOptionId": "C",
+      "optionDisplayOrder": [
+        "A",
+        "B",
+        "C"
+      ],
       "options": [
         {
           "id": "A",
-          "label": "Use AI to send the same growth offers to all customers, without personalising by business context",
-          "pathImpact": [0, 0, 0, 0, 6, -3, -5],
-          "scoreImpact": { "cei": 0, "trust": -1, "cost": -1, "retention": -1 },
-          "explanation": "More customers receive offers, which boosts short-term expansion. But generic offers feel irrelevant to many customers — and that erodes loyalty at the end of the journey."
+          "label": "Give the AI full access to the customer's transaction history, behavioural patterns, third-party data sources, and inferred financial signals to generate hyper-personalised product recommendations. No governance layer limits what the system can access or infer. The AI recommends exactly the right product at exactly the right moment based on everything it can see.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            11,
+            4,
+            1
+          ],
+          "scoreImpact": {
+            "cei": 6,
+            "trust": -3,
+            "cost": -4,
+            "retention": 2
+          },
+          "kpiRationale": {
+            "revenue": "Strong initial product conversion from precise recommendations.",
+            "trust": "Customers feel surveilled when they discover the depth of data inference.",
+            "cost": "Expensive — third-party data, complex inference, plus compliance remediation.",
+            "retention": "Short-term positive, long-term negative as trust erodes.",
+            "cei": "Good engagement initially but the trust damage limits deepening."
+          },
+          "businessImpact": {
+            "aiSpend": 1600000,
+            "budgetDelta": -1600000,
+            "revenueLiftPct": 0.8,
+            "revenueDelta": 2000000,
+            "customerValueDelta": 4,
+            "ceiDelta": 6,
+            "trustDelta": -3,
+            "adoptionDelta": 4,
+            "retentionDelta": 2
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "weak",
+            "trust": "negative",
+            "adoption": "moderate"
+          },
+          "insightExperience": "The AI recommended exactly the right product at exactly the right moment. But when the customer asked how the bank knew she was planning to expand, no one could clearly explain what data was used or how the inference was made. The recommendation was accurate. The feeling was surveillance.",
+          "insightCostDrivers": "Expensive to build and run — accessing and processing third-party data, behavioural inference, and unconstrained context adds significant infrastructure and compliance remediation cost when regulators ask questions.",
+          "insightRevenue": "Strong initial conversion on product recommendations. But trust erosion from opaque data use reduces the customer's willingness to act on future recommendations — and creates regulatory exposure that could cost more than the revenue generated.",
+          "compareSummary": {
+            "strongerThan": "B",
+            "weakerThan": "C",
+            "reason": "Best recommendation accuracy but creates trust and compliance exposure that undermines the relationship — the customer didn't consent to this depth of data inference."
+          },
+          "explanation": "Hyper-personalisation without governance is the most common expansion mistake. The AI's recommendation quality is high — it genuinely knows what the customer needs. But the customer doesn't know what the AI knows about them, how it made the inference, or what data it accessed. When customers discover the depth of profiling — and they eventually do — the trust impact is severe. Regulatory exposure compounds: without audit trails and governance layers, the bank cannot demonstrate compliance with data protection requirements. The recommendation was right. The architecture was wrong."
         },
         {
           "id": "B",
-          "label": "Use AI to match growth offers to each customer's actual situation — based on their behaviour, business signals, and likely needs",
-          "pathImpact": [0, 0, 0, 0, 18, 15, 13],
-          "scoreImpact": { "cei": 11, "trust": 4, "cost": -2, "retention": 4 },
-          "explanation": "AI acts as a genuine growth partner — identifying the right offer at the right time for each customer. This produces the largest single-stage value lift in the simulation, and it holds through retention and loyalty."
+          "label": "Recommend products based on customer segment only — all restaurant SMEs in a similar revenue band receive the same set of product suggestions. Fully compliant, fully auditable, no individual-level data inference. The AI uses only the customer's declared business type and account tier to generate recommendations.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            4,
+            -2,
+            -4
+          ],
+          "scoreImpact": {
+            "cei": 2,
+            "trust": 2,
+            "cost": 0,
+            "retention": -2
+          },
+          "kpiRationale": {
+            "revenue": "Low conversion — generic recommendations don't match individual customer needs.",
+            "trust": "No trust damage but no trust building either — the experience feels impersonal.",
+            "cost": "Cheapest option but the low revenue return doesn't justify even the modest spend.",
+            "retention": "Customers who receive irrelevant offers stop engaging with product suggestions.",
+            "cei": "Minimal engagement impact — the system doesn't demonstrate understanding of the customer."
+          },
+          "businessImpact": {
+            "aiSpend": 600000,
+            "budgetDelta": -600000,
+            "revenueLiftPct": 0.24,
+            "revenueDelta": 600000,
+            "customerValueDelta": 1,
+            "ceiDelta": 2,
+            "trustDelta": 2,
+            "adoptionDelta": 2,
+            "retentionDelta": -2
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "moderate",
+            "trust": "moderate",
+            "adoption": "low"
+          },
+          "insightExperience": "The customer received the same product recommendations as every other restaurant business in her tier. A standard working capital offer, a generic insurance suggestion, and a savings product she doesn't need. The recommendation was compliant. It was also irrelevant to her actual situation.",
+          "insightCostDrivers": "Low build and inference cost — segment-based recommendations require minimal AI complexity. But the lack of personalisation means low conversion rates on recommendations, reducing revenue per customer.",
+          "insightRevenue": "Low product conversion because recommendations don't match individual customer needs. Customers who receive generic offers stop engaging with the recommendation channel, reducing cross-sell opportunities over time.",
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "C",
+            "reason": "Fully compliant but the recommendations are generic — the AI doesn't use the customer context it has, so it recommends products based on segment averages rather than individual need."
+          },
+          "explanation": "Compliance without personalisation is safe but commercially ineffective. Segment-based recommendations treat every restaurant SME the same — but Aisha's cash flow pattern, growth trajectory, and supplier relationships are nothing like the coffee shop chain in the same segment. The AI has the data to distinguish between them. Choosing not to use it means the bank recommends products customers don't need and fails to recommend the ones they do. The compliance box is ticked. The customer value is not created."
         },
         {
           "id": "C",
-          "label": "Make no proactive offers — wait for customers to ask about new products themselves",
-          "pathImpact": [0, 0, 0, 0, -5, -4, -4],
-          "scoreImpact": { "cei": -4, "trust": 0, "cost": 1, "retention": -1 },
-          "explanation": "Without proactive offers, the bank misses customers at exactly the moment they are ready to grow. The lost opportunity compounds into lower retention and loyalty."
+          "label": "Build a personalised recommendation engine that uses the customer's own transaction data, cash flow patterns, and product usage history — with a full compliance layer: audit trails on every data access, transparent reasoning shown to the customer, consent-based access to external data, and governance rules that limit what the AI can infer without explicit permission.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            21,
+            16,
+            14
+          ],
+          "scoreImpact": {
+            "cei": 11,
+            "trust": 4,
+            "cost": 0,
+            "retention": 4
+          },
+          "kpiRationale": {
+            "revenue": "Highest conversion — recommendations match real needs and transparent reasoning drives action.",
+            "trust": "Customers who see how the AI uses their data trust it more, not less.",
+            "cost": "Moderate — compliance infrastructure is an investment in sustainable personalisation.",
+            "retention": "Customers who receive relevant, transparent recommendations deepen their relationship.",
+            "cei": "Highest expansion value — personalisation plus governance creates the deepest customer engagement."
+          },
+          "businessImpact": {
+            "aiSpend": 1200000,
+            "budgetDelta": -1200000,
+            "revenueLiftPct": 2,
+            "revenueDelta": 5000000,
+            "customerValueDelta": 9,
+            "ceiDelta": 11,
+            "trustDelta": 4,
+            "adoptionDelta": 6,
+            "retentionDelta": 4
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "insightExperience": "The AI recommended a working capital extension based on the customer's actual cash flow pattern and growth trajectory. It showed exactly what data it used and why it made the recommendation. The customer could see the reasoning, which made her more likely to act on it — and to trust the next recommendation.",
+          "insightCostDrivers": "Moderate build cost (£1.2M) includes the compliance infrastructure: audit logging, consent management, explainability layer, and governance rules. This is an investment in sustainable personalisation — the compliance layer protects the bank from regulatory exposure while enabling the depth of context that makes recommendations genuinely useful.",
+          "insightRevenue": "Highest product conversion because recommendations match actual customer needs at the right moment. Transparent reasoning increases willingness to act. Compliance layer protects the revenue stream from regulatory disruption. The combination drives both immediate cross-sell and long-term relationship deepening.",
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "Delivers personalisation quality comparable to Option A but with transparent governance that builds trust and protects from regulatory exposure — the compliance layer makes the personalisation sustainable."
+          },
+          "explanation": "This is the correct balance. Deep personalisation requires customer data — but it also requires the customer to trust how that data is used. The compliance layer is not a cost to minimise. It is the mechanism that makes personalisation sustainable. When the AI shows customers what data it accessed and why, two things happen: customers are more likely to act on the recommendation (because they can verify the reasoning), and they are more likely to grant additional data access in future (because they trust the governance). The compliance investment pays for itself through higher conversion, deeper trust, and protection from the regulatory exposure that Option A creates. Personalisation without governance is a liability. Governance without personalisation is irrelevant. The combination is the competitive advantage."
         }
-      ]
+      ],
+      "aishaContext": "Customers like Aisha are growing and need the right financial product at the right moment — a working capital facility, an expansion loan, FX hedging for new suppliers. The bank has the data to recommend precisely. The question is how deep into customer data the AI should go, and what governance protects the customer."
     },
     {
       "id": 6,
       "stageIndex": 5,
       "stage": "Retention",
-      "title": "How should the AI respond to emerging risk and churn signals?",
-      "prompt": "The bank's systems are picking up early signs that some customers may be struggling or thinking of leaving. How should AI use these signals to respond?",
+      "title": "An SME customer like Aisha is drifting. The bank's AI knows it. What it does next defines the whole relationship.",
+      "tradeoffTagline": "🤖 Autonomous action vs 🧠 Human accountability vs ⏳ Reactive timing",
+      "prompt": "Fourteen months into the relationship, Aisha's Hackney restaurant is in its early growth phase — trading below initial projections. Her transaction volume at the bank has dropped 18%. She has had two conversations with a competitor's relationship manager. This pattern — reduced transaction volume, early-stage expansion stress, competitive outreach — is common across the SME portfolio. The bank's AI has flagged her as a retention risk. What it does next will determine whether this is a trust-building event or the beginning of the end of the relationship.",
       "bestOptionId": "B",
+      "optionDisplayOrder": [
+        "A",
+        "B",
+        "C"
+      ],
       "options": [
         {
+          "id": "C",
+          "label": "Wait for the customer to raise a concern or show explicit churn signals before the bank responds — a closure request or a direct statement of intent to switch — before responding. No proactive outreach.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            -2,
+            -2
+          ],
+          "scoreImpact": {
+            "cei": -5,
+            "trust": -2,
+            "cost": 3,
+            "retention": -4
+          },
+          "kpiRationale": {
+            "revenue": "Bank detects a 3-month churn window and acts zero times — full remaining CLV of a two-restaurant SME is lost.",
+            "trust": "Inaction on a detected risk signals to customers that the bank watches their financial health but does not respond.",
+            "cost": "Cheapest retention approach — but losing the full CLV of a peak-value SME far outweighs the AI spend saving.",
+            "retention": "Waiting for explicit churn signals means intervention arrives after psychological disengagement is already complete.",
+            "cei": "A retained SME at peak CLV is the simulation's highest CEI asset — inaction permanently forfeits it."
+          },
+          "businessImpact": {
+            "aiSpend": 100000,
+            "budgetDelta": -100000,
+            "revenueLiftPct": -0.8,
+            "revenueDelta": -2000000,
+            "customerValueDelta": -4,
+            "ceiDelta": -5,
+            "trustDelta": -2,
+            "adoptionDelta": -2,
+            "retentionDelta": -4
+          },
+          "tradeoffProfile": {
+            "experience": "negative",
+            "economics": "moderate",
+            "trust": "low",
+            "adoption": "low"
+          },
+          "insightExperience": "Customers like Aisha opened accounts with competitor banks in month 17. They didn't tell their original bank they were considering it. There were no explicit churn signals until the direct debit schedules started moving. By then, the conversation was remedial — not relational.",
+          "insightCostDrivers": "At £100K, this is the cheapest retention approach by far. The cost of not intervening is not in the AI spend — it is in the lost lifetime value of a two-restaurant SME customer at peak CLV. A customer who leaves at this stage takes with them the lending relationship, the FX revenue, the working capital facility, and the referral network they have built. The cost of inaction is not £100K. It is the full CLV of the relationship from month 17 onward.",
+          "insightRevenue": "Early intervention consistently outperforms late recovery at retention. The bank detected the risk 3 months before customers like Aisha left. It acted on that detection zero times. The intervention window was open for 12 weeks and never used.",
+          "compareSummary": {
+            "strongerThan": null,
+            "weakerThan": "B",
+            "reason": "Saves £900K in retention AI spend, then loses the full remaining CLV of a two-restaurant SME at peak value. The timing failure is the most commercially consequential decision in the simulation."
+          },
+          "explanation": "Waiting for explicit churn signals means the intervention arrives after the relationship has already been psychologically vacated. SME customers like Aisha start conversations with competitor banks when a combination of business stress and competitor proactivity reaches a threshold. The bank had a 3-month window — visible in the transaction volume decline, the support contact frequency, and the changed payment patterns — during which a proactive, transparent conversation could have been the difference. The AI detected the risk. No architecture was built to act on it. The cost of detection without action is higher than the cost of not detecting: the bank knew, and chose not to respond."
+        },
+        {
           "id": "A",
-          "label": "Allow AI to act automatically when it detects a risk — without explaining to the customer what it is doing or why",
-          "pathImpact": [0, 0, 0, 0, 0, 7, -5],
-          "scoreImpact": { "cei": 0, "trust": -3, "cost": 2, "retention": 1 },
-          "explanation": "Some customers are retained, but acting without explanation at a sensitive moment seriously damages trust. The short-term retention gain fully reverses into loyalty loss — a clear consequence of acting without transparency."
+          "label": "The AI acts autonomously on risk signals — detecting retention risk and automatically adjusting account terms. For a customer like Aisha, it increases the credit facility by £15K, reduces the monthly account fee by 30%, and sends a push notification: 'We've updated your account terms to support your Hackney growth phase.'",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            8,
+            -7
+          ],
+          "scoreImpact": {
+            "cei": 1,
+            "trust": -5,
+            "cost": -4,
+            "retention": 1
+          },
+          "kpiRationale": {
+            "revenue": "Short-term retention, but unexplained autonomous account changes create Loyalty-stage trust damage and eventual churn.",
+            "trust": "Autonomously modifying an SME's financial accounts without explanation violates Agency and Control at a moment of financial anxiety.",
+            "cost": "Most expensive retention approach at £1.4M — for an outcome that generates the trust damage it is trying to prevent.",
+            "retention": "Immediate churn prevented but 6-month trajectory shows customers leave anyway after the trust deficit compounds.",
+            "cei": "Trust damage from unexplained autonomous action suppresses Loyalty-stage CEI — the opposite of what retention investment should achieve."
+          },
+          "businessImpact": {
+            "aiSpend": 1400000,
+            "budgetDelta": -1400000,
+            "revenueLiftPct": 0.32,
+            "revenueDelta": 800000,
+            "customerValueDelta": -3,
+            "ceiDelta": 1,
+            "trustDelta": -5,
+            "adoptionDelta": 0,
+            "retentionDelta": 1
+          },
+          "tradeoffProfile": {
+            "experience": "low",
+            "economics": "weak",
+            "trust": "negative",
+            "adoption": "low"
+          },
+          "insightExperience": "Customers like Aisha logged into their accounts to find their credit limit had been increased and their fee reduced. They hadn't asked for either. The notification gave no explanation of what had changed or why. At a moment of financial uncertainty, discovering that the bank had made changes to their account without asking — even generous ones — felt controlling rather than supportive.",
+          "insightCostDrivers": "At £1.4M and £0.19 per intervention, this is the most expensive retention approach. The spending is on autonomous action — continuous risk monitoring, signal classification, and automated intervention execution — without any of the governance infrastructure that would make the action trustworthy. Cost is high. Trust outcome is negative.",
+          "insightRevenue": "Retention metrics improve in the short term — customers like Aisha don't immediately leave. But the trust damage from unexplained autonomous action on their financial accounts at a moment of vulnerability creates a Loyalty-stage collapse. They stayed but didn't deepen the relationship. They started looking for alternatives within 6 months.",
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "B",
+            "reason": "Prevents the immediate churn that Option C triggers — but the autonomous, unexplained action on an SME customer's account at a financially sensitive moment creates a trust deficit that compounds through Loyalty."
+          },
+          "explanation": "Acting without explanation on someone's financial account — at the moment they are most anxious about their financial position — is the most consequential trust violation an AI can commit in financial services. The AI's intent was correct: customers like Aisha needed support, the credit facility increase and fee reduction were the right gestures. The execution was wrong: no human reviewed the decision, no explanation was provided to the customer, and the changes appeared in their account without their participation. The AIX Agency & Control dimension is explicit: the customer must be the decision-maker, not just the recipient of automated generosity. The AI must operate within visible, understandable boundaries. When an SME discovers that their bank's AI modified their account terms without asking — even to their benefit — the question that follows is: what else can it change without asking? That question, once asked, does not have a satisfactory answer."
         },
         {
           "id": "B",
-          "label": "Use AI to spot risk early and offer the customer clear, practical support — explaining what has been detected and what options are available",
-          "pathImpact": [0, 0, 0, 0, 0, 20, 18],
-          "scoreImpact": { "cei": 12, "trust": 5, "cost": -1, "retention": 6 },
-          "explanation": "This is the highest-impact decision in the simulation. AI detects risk early, offers relevant support, and keeps the customer informed throughout. The effect on retention and loyalty is the most powerful in the entire journey."
-        },
+          "label": "The AI detects risk and briefs a relationship manager who contacts the customer within 24 hours. For customers like Aisha, the call opens: 'We've noticed Hackney is in its early growth phase and your transaction patterns have shifted — we wanted to check in and see how we can support you.' Customers are told what the bank observed and what it is proposing.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            24,
+            22
+          ],
+          "scoreImpact": {
+            "cei": 11,
+            "trust": 5,
+            "cost": 1,
+            "retention": 6
+          },
+          "kpiRationale": {
+            "revenue": "Retained two-restaurant SME at peak CLV generates 36-month revenue that materially exceeds the intervention cost.",
+            "trust": "Naming exactly what the bank observed and proposing a specific response deepens trust rather than eroding it.",
+            "cost": "£400K less than autonomous action — human review adds governance without adding cost above the autonomous approach.",
+            "retention": "Proactive, transparent, human-approved intervention is the simulation's highest single-stage retention outcome.",
+            "cei": "Trust retained and deepened at Retention compounds into the Loyalty stage's highest CEI outcomes."
+          },
+          "businessImpact": {
+            "aiSpend": 1000000,
+            "budgetDelta": -1000000,
+            "revenueLiftPct": 1.6,
+            "revenueDelta": 4000000,
+            "customerValueDelta": 8,
+            "ceiDelta": 11,
+            "trustDelta": 5,
+            "adoptionDelta": 5,
+            "retentionDelta": 6
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "insightExperience": "The relationship manager called on a Tuesday morning. She opened with specific information — Hackney, transaction patterns, the shift the bank had noticed — and offered a structured review of the customer's working capital position. Customers like Aisha hadn't known the bank was watching so closely. The fact that it was, and that it called before they reached out, changed their perception of the relationship fundamentally.",
+          "insightCostDrivers": "At £1.0M and £0.14 per intervention — £400K less than autonomous action — the human-approved model is cheaper and produces better outcomes. The AI does the detection and briefing; the human does the intervention. The cost of the relationship manager call is absorbed by the retention outcome: a retained two-restaurant SME at peak CLV generates materially more revenue over the subsequent 36 months than the intervention cost.",
+          "insightRevenue": "Customers like Aisha did not switch banks. They deepened the relationship: expanding FX facilities, taking working capital top-ups, and referring business owner contacts within 6 months. The CEI uplift at Retention — when intervention is transparent and human-approved — is the highest in the simulation. Retained trust at this stage is compounding equity.",
+          "compareSummary": {
+            "strongerThan": "A",
+            "weakerThan": null,
+            "reason": "At £400K less than autonomous action, it delivers five times the revenue — the human review step turns the intervention from a trust risk into a trust-building event, and that difference is the entire outcome gap."
+          },
+          "explanation": "This is the correct decision — and it reflects the most important governance principle in the LLM Economics Decision Framework: autonomy drives scale and speed, but increases risk; human oversight adds control but reduces efficiency, and the balance is critical. At a stage where SME customers like Aisha are financially anxious and already evaluating competitors, autonomous action on their accounts — even generous action — violates the Agency & Control dimension of AIX. The human-approved model preserves that dimension: the AI detects, briefs, and prepares; the human decides and communicates. The customer is told exactly what was observed and exactly what is being proposed. They participate in the decision. That participation is the mechanism of trust — and trust retained at Retention is the highest-CLV asset on the bank's SME book."
+        }
+      ],
+      "aishaContext": "Fourteen months in. Hackney is trading below initial projections. Aisha — like many SME customers navigating early-stage expansion — has quietly met with a competitor relationship manager twice. She has not told her bank. The bank has flagged her as at-risk. Aisha does not know the bank knows."
+    },
+    {
+      "id": 7,
+      "stageIndex": 6,
+      "stage": "Loyalty",
+      "title": "SME customers like Aisha are the bank's most valuable segment. Does the AI serve their growth — or extract from it?",
+      "tradeoffTagline": "🌱 Long-term partnership vs 💵 Commercial extraction vs 🎲 Co-investment risk",
+      "prompt": "Twenty months into the relationship. Hackney is trading profitably. Aisha now employs 24 people across two sites. A regional food brand has approached her about licensing her restaurant concept — a potential franchise opportunity. SME customers like Aisha, at this stage, are at the peak of their banking value: multiple properties, a strong lending relationship, growing FX volume, and a referral network of business owners they have introduced to the bank. The bank must decide what its AI does at this moment.",
+      "bestOptionId": "A",
+      "optionDisplayOrder": [
+        "A",
+        "B",
+        "C"
+      ],
+      "options": [
         {
           "id": "C",
-          "label": "Take no action until the customer contacts the bank or clearly shows signs of leaving",
-          "pathImpact": [0, 0, 0, 0, 0, -5, -4],
-          "scoreImpact": { "cei": -5, "trust": -1, "cost": 1, "retention": -4 },
-          "explanation": "Waiting means the bank only responds after significant damage has already been done. The loss in retention and loyalty is immediate and clearly visible on the chart."
+          "label": "The AI models a co-investment opportunity and proactively proposes the bank becomes a commercial partner in the customer's expansion — evaluating the franchise structure, the capital requirement, and the risk profile — and proactively proposes to co-invest in the franchise expansion alongside them as a commercial partner. A specialist franchise finance product. High ceiling if customers like Aisha accept. New risk category for the bank.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -2
+          ],
+          "scoreImpact": {
+            "cei": 2,
+            "trust": -3,
+            "cost": 0,
+            "retention": 0
+          },
+          "kpiRationale": {
+            "revenue": "Unsolicited co-investment converts poorly — customers sought an intelligence partner, not an uninvited commercial co-owner.",
+            "trust": "Proposing co-ownership of the customer's business concept shifts the relationship dynamic they didn't invite.",
+            "cost": "£600K AI plus commercial team resource for a product most SME customers at this stage will decline.",
+            "retention": "Unsolicited change of relationship dynamic increases evaluation of alternatives at peak CLV.",
+            "cei": "Bank's commercial ambitions reduce CEI by shifting from intelligence partner to uninvited commercial participant."
+          },
+          "businessImpact": {
+            "aiSpend": 600000,
+            "budgetDelta": -600000,
+            "revenueLiftPct": 0.2,
+            "revenueDelta": 500000,
+            "customerValueDelta": -1,
+            "ceiDelta": 2,
+            "trustDelta": -3,
+            "adoptionDelta": 1,
+            "retentionDelta": 0
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "moderate",
+            "trust": "moderate",
+            "adoption": "low"
+          },
+          "insightExperience": "Customers like Aisha were surprised to receive a co-investment proposal from the bank — they hadn't asked for one. The proposal was detailed and well-modelled. But it changed the nature of the conversation: suddenly the bank was not their financial partner, it was a potential co-owner of their concept. That change in relationship dynamic — unsolicited — introduced a complexity they weren't ready for.",
+          "insightCostDrivers": "At £600K in AI modelling cost plus commercial team resource for structuring a novel franchise finance product, the bank is investing in a capability it doesn't currently have for customers who didn't ask for it. The highest-ceiling outcomes require SME customers like Aisha to say yes to a relationship change they may not want at this stage of their business.",
+          "insightRevenue": "The proposal generates significant analysis and commercial team cost. If the customer accepts, the upside is substantial. If they decline — which is more likely when an unsolicited co-investment proposal arrives at a moment of growth — the bank has invested in an offer that complicated the relationship and generated no revenue.",
+          "compareSummary": {
+            "strongerThan": "B",
+            "weakerThan": "A",
+            "reason": "Bold, well-intentioned — but the co-investment proposal introduces a relationship dynamic SME customers like Aisha didn't request at the moment they most value the bank's intelligence, not its commercial ambitions."
+          },
+          "explanation": "The co-investment proposal is the right idea at the wrong time, delivered in the wrong way. SME customers like Aisha are at peak CLV and high trust — this is exactly the moment where the bank's AI should be demonstrating its value as an intelligence partner. Instead, it proposes to become a commercial partner — an unsolicited shift in the nature of the relationship that customers must now evaluate, negotiate, and potentially decline. The AIX Agency & Control dimension is violated: the customer should decide whether to expand the relationship into new territory; the bank's AI should enable that decision, not make it for them. A co-investment conversation initiated by the SME customer — after the AI has given them the intelligence to evaluate the licensing opportunity — is a very different conversation from one initiated by the bank as a surprise proposal."
+        },
+        {
+          "id": "B",
+          "label": "The AI identifies cross-sell opportunities and surfaces them in order of bank margin — each product is useful but ordered by commercial priority. Each product is genuinely useful for a growing two-restaurant SME like Aisha's. The AI surfaces them because they are margin-positive for the bank.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            6
+          ],
+          "scoreImpact": {
+            "cei": 2,
+            "trust": -4,
+            "cost": -3,
+            "retention": -2
+          },
+          "kpiRationale": {
+            "revenue": "Short-term cross-sell revenue from useful products, but trust erosion reduces advocacy — the highest Loyalty-stage output.",
+            "trust": "Products surfaced by bank margin signal that AI recommendations serve the bank's interests ahead of the customer's.",
+            "cost": "Most expensive loyalty approach — and trust erosion reduces future conversion rates, compounding the cost per acquisition.",
+            "retention": "Extraction-oriented AI converts loyal customers into evaluators — bank trades long-term trust for short-term margin.",
+            "cei": "Advocacy generates referral SMEs at zero acquisition cost — margin-ordered recommendations do not generate advocacy."
+          },
+          "businessImpact": {
+            "aiSpend": 1000000,
+            "budgetDelta": -1000000,
+            "revenueLiftPct": 0.48,
+            "revenueDelta": 1200000,
+            "customerValueDelta": -3,
+            "ceiDelta": 2,
+            "trustDelta": -4,
+            "adoptionDelta": -1,
+            "retentionDelta": -2
+          },
+          "tradeoffProfile": {
+            "experience": "moderate",
+            "economics": "moderate",
+            "trust": "negative",
+            "adoption": "low"
+          },
+          "insightExperience": "The products the AI surfaced were all relevant to Aisha's business. The order in which they were surfaced — premium account tier first, then FX hedging, then insurance — reflected bank margin, not the customer's priorities. Customers like Aisha noticed. Not consciously at first. But the recommendations felt increasingly promotional over three months, and they started dismissing them without reading.",
+          "insightCostDrivers": "At £1.0M and £0.12 per recommendation, this is more expensive than Option A. The products convert at reasonable rates — they are genuinely useful. But the recommendation ordering, driven by commercial priority rather than customer need, erodes the signal value of the channel over time. Customers who stop engaging with recommendations cost the bank more per conversion in future.",
+          "insightRevenue": "Short-term cross-sell revenue is real. The trust erosion is slower but compounding: customers who begin to interpret AI recommendations as promotional rather than advisory reduce their engagement with the recommendation layer, increase their receptiveness to competitive outreach, and generate lower referral value. Advocacy is the highest-CLV output of the Loyalty stage — and extraction-oriented AI does not generate it.",
+          "compareSummary": {
+            "strongerThan": "C",
+            "weakerThan": "A",
+            "reason": "Generates more short-term cross-sell revenue than Option C — but the recommendation ordering by margin erodes the channel's signal value and the customer's trust in a way that reduces lifetime value faster than the cross-sell revenue grows it."
+          },
+          "explanation": "The products are not wrong. The objective function is. An AI that surfaces products in order of bank margin is not optimising for customer outcomes — it is optimising for short-term revenue at the expense of long-term trust. SME customers like Aisha, after 20 months of relationship, have been through a cash flow crisis the bank caught, a retention risk the bank handled with transparency, and an expansion decision the bank grounded in live market intelligence. They now have a calibrated sense of what 'this bank's AI genuinely serves my interests' feels like. When the recommendations shift from intelligence to promotion — even subtly, even with genuinely useful products — they will notice. The trust that has been built over 20 months and 6 major decisions is the most valuable asset on the bank's SME book. An extraction-oriented AI at Loyalty trades that asset for margin on an insurance product."
+        },
+        {
+          "id": "A",
+          "label": "The AI surfaces business intelligence that serves the customer's growth — franchise analysis, sector benchmarks, expansion modelling. For customers like Aisha, the bank's revenue is the downstream consequence of being the intelligence partner they trust at their most consequential decisions.",
+          "pathImpact": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            24
+          ],
+          "scoreImpact": {
+            "cei": 9,
+            "trust": 5,
+            "cost": 2,
+            "retention": 4
+          },
+          "kpiRationale": {
+            "revenue": "Franchise analysis drives a licensing decision and customer referrals — each referral is a new SME at zero acquisition cost.",
+            "trust": "Serving customer growth goals rather than bank margin confirms the bank's AI is a genuine intelligence partner.",
+            "cost": "Lowest cost in the round at £800K — reuses retrieval and CFO agent infrastructure already built at earlier stages.",
+            "retention": "Customers who trust the bank's intelligence at their most consequential decision do not evaluate alternatives.",
+            "cei": "Advocacy from a loyal, trust-rich SME at peak value is the highest CEI multiplier available in the simulation."
+          },
+          "businessImpact": {
+            "aiSpend": 800000,
+            "budgetDelta": -800000,
+            "revenueLiftPct": 1.6,
+            "revenueDelta": 4000000,
+            "customerValueDelta": 7,
+            "ceiDelta": 9,
+            "trustDelta": 5,
+            "adoptionDelta": 5,
+            "retentionDelta": 4
+          },
+          "tradeoffProfile": {
+            "experience": "high",
+            "economics": "strong",
+            "trust": "high",
+            "adoption": "high"
+          },
+          "insightExperience": "The AI surfaced a franchise licensing analysis that customers like Aisha hadn't asked for — but immediately recognised as exactly what they needed. The analysis showed the capital structure of comparable restaurant franchise models, the cash flow implications of the licensing fee structure, and a comparison of the customer's financial position against businesses that had made the same decision. The bank's intelligence was serving the customer's goals, not its own.",
+          "insightCostDrivers": "At £800K and £0.10 per insight — the lowest cost in this round — serving customer outcomes costs less than extraction. The intelligence the AI provides draws on the retrieval infrastructure built at Expansion and the CFO agent built at Engagement. No new capability required. The insight is generated from assets the bank has already built, deployed at the moment they generate the highest value.",
+          "insightRevenue": "Customers like Aisha used the franchise analysis to negotiate their licensing terms. They referred additional business owners to the bank within the following year — specifically citing the bank's intelligence as the reason. Each referral generates a new SME relationship at zero acquisition cost. The compounding CLV of a loyal, advocacy-generating SME at peak value — banking revenue, lending revenue, FX revenue, referrals — is the highest return the simulation can produce.",
+          "compareSummary": {
+            "strongerThan": "B",
+            "weakerThan": null,
+            "reason": "At £200K less than Option B, it generates more than three times the revenue — because the intelligence serves the customer's growth rather than the bank's margin, and advocacy is worth more than cross-sell conversion."
+          },
+          "explanation": "This is the correct decision — and it closes the argument that has run across all seven stages of the simulation. The LLM Economics Decision Framework is explicit: experience decisions, architecture decisions, and commercial decisions must be made together, not sequentially. At Loyalty, the experience decision is clear: serve SME customer growth. The architecture decision follows: deploy the intelligence infrastructure already built — the retrieval layer from Expansion, the CFO agent from Engagement — to generate insights about the opportunities customers like Aisha are evaluating. The commercial decision is downstream: the bank's revenue is the consequence of being the intelligence partner that SME customers trust at their most consequential decisions, not the product they are being sold this month. Serving customer outcomes costs less and earns more than extraction. The compounding value of trust — built correctly at every stage from Onboarding through Loyalty — is the asset. The AI's job at Loyalty is not to monetise that asset. It is to compound it."
         }
-      ]
+      ],
+      "aishaContext": "Twenty months in. Hackney is profitable. Aisha now employs 24 people across two restaurants. A regional food brand has approached her about licensing her concept. SME customers like Aisha at this stage are at the peak of their value — and wondering whether their bank will step up for this moment."
     }
   ]
 }

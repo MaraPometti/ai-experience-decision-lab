@@ -10,54 +10,41 @@ import {
 } from 'recharts'
 
 const COLOR = {
-  baseline: '#9ca3af',  // gray    — BAU Experience
-  live:     '#2563eb',  // blue    — Class Decision Path
-  best:     '#16a34a',  // green   — High-Value AI Path
-  worst:    '#dc2626',  // red     — Low-Value AI Path
-  preview:  '#f59e0b',  // amber   — Preview
+  baseline: '#9ca3af',
+  live:     '#2563eb',
+  best:     '#16a34a',
+  preview:  '#f59e0b',
 }
 
 export default function ValueChart({
   stages,
   baselinePath,
   bestPath,
-  worstPath,
   livePath,
-  showLivePath,    // true after first option is applied
+  showLivePath,
   showBestPath,
-  showWorstPath,
+  showBaseline = true,
   previewPath,
 }) {
-  // ── Build chart data ──────────────────────────────────────────────────────────
-  // BAU Experience is always present.
-  // Class Decision Path only appears once the simulation has started.
-  // Conditional series are only added to data when visible so the tooltip
-  // never lists hidden lines.
   const data = stages.map((stage, i) => {
-    const point = {
-      stage,
-      'BAU Experience': baselinePath[i],
-    }
-    if (showLivePath)  point['Class Decision Path'] = livePath[i]
-    if (showBestPath)  point['High-Value AI Path']  = bestPath[i]
-    if (showWorstPath) point['Low-Value AI Path']   = worstPath[i]
-    if (previewPath)   point['Preview']             = previewPath[i]
+    const point = { stage }
+    if (showBaseline) point['BAU Experience']         = baselinePath[i]
+    if (showLivePath) point["Leaders' Path"]          = livePath[i]
+    if (showBestPath) point['Optimal AI Experience']  = bestPath[i]
+    if (previewPath)  point['Other Option Path']      = previewPath[i]
     return point
   })
 
-  // ── Legend payload ────────────────────────────────────────────────────────────
-  // Controlled explicitly so the legend only lists lines that are actually shown.
   const legendPayload = [
-    { value: 'BAU Experience',      type: 'line', color: COLOR.baseline },
-    ...(showLivePath  ? [{ value: 'Class Decision Path', type: 'line', color: COLOR.live }]    : []),
-    ...(showBestPath  ? [{ value: 'High-Value AI Path',  type: 'line', color: COLOR.best }]    : []),
-    ...(showWorstPath ? [{ value: 'Low-Value AI Path',   type: 'line', color: COLOR.worst }]   : []),
-    ...(previewPath   ? [{ value: 'Preview',             type: 'line', color: COLOR.preview }] : []),
+    ...(showBaseline ? [{ value: 'BAU Experience',         type: 'line', color: COLOR.baseline }] : []),
+    ...(showLivePath ? [{ value: "Leaders' Path",          type: 'line', color: COLOR.live }]     : []),
+    ...(showBestPath ? [{ value: 'Optimal AI Experience',  type: 'line', color: COLOR.best }]     : []),
+    ...(previewPath  ? [{ value: 'Other Option Path',      type: 'line', color: COLOR.preview }]  : []),
   ]
 
   return (
     <div className="value-chart">
-      <ResponsiveContainer width="100%" height={380}>
+      <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 16, right: 24, left: 16, bottom: 8 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
 
@@ -75,7 +62,7 @@ export default function ValueChart({
               style: { fontSize: 11, fill: '#6b7280' },
             }}
             tick={{ fontSize: 12, fill: '#374151' }}
-            domain={[0, 'auto']}   // floor at 0 — negative values clip cleanly
+            domain={[0, 100]}
             width={80}
           />
 
@@ -89,12 +76,10 @@ export default function ValueChart({
             wrapperStyle={{ fontSize: 13, paddingTop: 8 }}
           />
 
-          {/* ── Always visible ── */}
-
-          {/* BAU: gray dashed — stays perceivable even when live path overlaps */}
           <Line
             type="monotone"
             dataKey="BAU Experience"
+            hide={!showBaseline}
             stroke={COLOR.baseline}
             strokeWidth={2}
             strokeDasharray="5 5"
@@ -103,10 +88,9 @@ export default function ValueChart({
             isAnimationActive={false}
           />
 
-          {/* ── Class Decision Path — hidden until first option is applied ── */}
           <Line
             type="monotone"
-            dataKey="Class Decision Path"
+            dataKey="Leaders' Path"
             hide={!showLivePath}
             stroke={COLOR.live}
             strokeWidth={3}
@@ -115,12 +99,9 @@ export default function ValueChart({
             isAnimationActive={false}
           />
 
-          {/* ── Conditionally visible reference lines ── */}
-          {/* Using hide prop rather than conditional JSX for recharts 3.x compatibility */}
-
           <Line
             type="monotone"
-            dataKey="High-Value AI Path"
+            dataKey="Optimal AI Experience"
             hide={!showBestPath}
             stroke={COLOR.best}
             strokeWidth={2}
@@ -132,20 +113,7 @@ export default function ValueChart({
 
           <Line
             type="monotone"
-            dataKey="Low-Value AI Path"
-            hide={!showWorstPath}
-            stroke={COLOR.worst}
-            strokeWidth={2}
-            strokeDasharray="6 3"
-            dot={{ r: 4 }}
-            activeDot={{ r: 6 }}
-            isAnimationActive={false}
-          />
-
-          {/* Preview compare line — amber dashed */}
-          <Line
-            type="monotone"
-            dataKey="Preview"
+            dataKey="Other Option Path"
             hide={!previewPath}
             stroke={COLOR.preview}
             strokeWidth={2}

@@ -135,12 +135,47 @@ export default function FinalSummary({
   bestPath,
   journeyStages,
   onReset,
+  teamName,
+  choices,
 }) {
   const result   = getResult(score.cei)
   const insights = generateInsights(livePath, baselinePath, bestPath, journeyStages)
+  const hasChoices = Array.isArray(choices) && choices.length > 0
 
   return (
     <div className="final-summary">
+
+      {/* ── Team name + choices (play mode) ── */}
+      {teamName && (
+        <div className="summary-section">
+          <p className="summary-team-name">{teamName}</p>
+        </div>
+      )}
+
+      {hasChoices && (
+        <div className="summary-section">
+          <p className="summary-section-label">Your choices</p>
+          <div className="choices-row">
+            {choices.map((choice, i) => (
+              <div key={i} className="choice-item">
+                {i > 0 && <span className="choice-arrow">→</span>}
+                <div className="choice-bubble-wrap">
+                  <div className="choice-bubble">{choice}</div>
+                  <span className="choice-stage">
+                    {(journeyStages[i] || '').slice(0, 3)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="choices-facilitator">
+            Read your choices to the facilitator:{' '}
+            <span className="choices-string">{choices.join('')}</span>
+          </p>
+        </div>
+      )}
+
+      {(teamName || hasChoices) && <hr className="summary-divider" />}
 
       {/* ── Result label ── */}
       <div className="summary-section">

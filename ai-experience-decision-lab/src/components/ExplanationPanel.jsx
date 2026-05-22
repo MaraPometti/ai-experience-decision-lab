@@ -1,52 +1,162 @@
-const LEGEND_KEY = [
-  { color: '#9ca3af', dash: true,  label: 'BAU Experience',       desc: 'baseline — no AI applied' },
-  { color: '#2563eb', dash: false, label: 'Class Decision Path',  desc: 'cumulative class choices' },
-  { color: '#16a34a', dash: true,  label: 'High-Value AI Path',   desc: 'strongest modeled outcome' },
-  { color: '#dc2626', dash: true,  label: 'Low-Value AI Path',    desc: 'weakest modeled outcome' },
-  { color: '#f59e0b', dash: true,  label: 'Preview Path',         desc: 'temporary comparison' },
-]
+import { useState } from 'react'
 
-export default function ExplanationPanel({ explanation, previewOption }) {
+function fmtGBP(v) {
+  const abs = Math.abs(v)
+  if (abs >= 1_000_000) return `£${(abs / 1_000_000).toFixed(1)}m`
+  if (abs >= 1_000)     return `£${(abs / 1_000).toFixed(0)}k`
+  return `£${abs}`
+}
+
+function firstSentence(text, maxWords = 20) {
+  if (!text) return null
+  const sentence = text.split('. ')[0].trim().replace(/\.$/, '')
+  const words = sentence.split(' ')
+  if (words.length <= maxWords) return sentence
+  return words.slice(0, maxWords).join(' ') + '...'
+}
+
+function renderComparisonSummary(selectedOption, previewOption) {
+  if (!selectedOption || !previewOption) return null
+
+  const s = selectedOption.businessImpact
+  const p = previewOption.businessImpact
+
+  const revenueDelta = p.revenueDelta - s.revenueDelta
+  const trustDelta   = p.trustDelta   - s.trustDelta
+  const aiSpendDelta = p.aiSpend      - s.aiSpend
+
+  const fmt = (v, isSpend) => {
+    const sign = v > 0 ? '+' : '−'
+    return `${sign}${fmtGBP(Math.abs(v))}${isSpend ? ' AI cost' : ' revenue'}`
+  }
+  const fmtTrust = v => v === 0
+    ? 'No trust change'
+    : `${v > 0 ? '+' : ''}${v} trust point${Math.abs(v) !== 1 ? 's' : ''}`
+
+  const bullets = [
+    {
+      tone: revenueDelta >= 0 ? 'positive' : 'negative',
+      text: `${fmt(revenueDelta, false)} vs Option ${selectedOption.id}`,
+    },
+    {
+      tone: trustDelta >= 0 ? 'positive' : 'negative',
+      text: `${fmtTrust(trustDelta)} vs Option ${selectedOption.id}`,
+    },
+    {
+      tone: aiSpendDelta <= 0 ? 'positive' : 'warning',
+      text: `${fmt(aiSpendDelta, true)} vs Option ${selectedOption.id}`,
+    },
+  ]
+
+  return (
+    <>
+      <p className="panel-label">
+        {`Option ${previewOption.id} vs your choice (Option ${selectedOption.id})`}
+      </p>
+      <p className="preview-title">
+        {`OPTION ${previewOption.id} — COUNTERFACTUAL`}
+      </p>
+      <div className="preview-bullets">
+        {bullets.map(b => (
+          <p key={b.text} className={`preview-bullet preview-bullet-${b.tone}`}>
+            {b.text}
+          </p>
+        ))}
+      </div>
+      <p className="preview-text preview-text-context">
+        {previewOption.compareSummary?.reason}
+      </p>
+    </>
+  )
+}
+
+export default function ExplanationPanel({
+  explanation,
+  insightExperience,
+  selectedOption,
+  previewOption,
+  verdictColor,
+}) {
+  const [expandAnalysis, setExpandAnalysis] = useState(false)
+
+  const whyRows = [
+    {
+      icon: '📊',
+      label: 'Experience',
+      bullet: firstSentence(selectedOption?.insightExperience || insightExperience),
+      full:   selectedOption?.insightExperience || insightExperience,
+    },
+    {
+      icon: '💰',
+      label: 'Cost Logic',
+      bullet: firstSentence(selectedOption?.insightCostDrivers),
+      full:   selectedOption?.insightCostDrivers,
+    },
+    {
+      icon: '📈',
+      label: 'Revenue Impact',
+      bullet: firstSentence(selectedOption?.insightRevenue),
+      full:   selectedOption?.insightRevenue,
+    },
+  ]
+
   return (
     <div className="explanation-panel">
 
-      {/* Decision insight */}
-      <div className={`insight-block ${explanation ? '' : 'insight-empty'}`}>
-        <p className="panel-label">Decision insight</p>
-        {explanation
-          ? <p className="insight-text">{explanation}</p>
-          : <p className="insight-placeholder">Select an option to see the consequence.</p>
-        }
-      </div>
-
-      {/* Preview note — only shown when a preview is active */}
-      {previewOption && (
-        <div className="preview-note">
-          <p className="panel-label">Previewing option {previewOption.id}</p>
-          <p className="preview-text">{previewOption.explanation}</p>
+      {/* Card 1 — Aisha's Outcome */}
+      {insightExperience && (
+        <div className="insight-card insight-card-aisha">
+          <p className="panel-label">What Happened to Aisha</p>
+          <p className="aisha-outcome-text">{insightExperience}</p>
         </div>
       )}
 
-      {/* Chart legend key */}
-      <div className="legend-key">
-        <p className="panel-label">Chart key</p>
-        <ul className="legend-list">
-          {LEGEND_KEY.map(item => (
-            <li key={item.label} className="legend-item">
-              <span
-                className="legend-swatch"
-                style={{
-                  borderTopStyle: item.dash ? 'dashed' : 'solid',
-                  borderTopColor: item.color,
-                }}
-              />
-              <span className="legend-text">
-                <strong>{item.label}</strong> — {item.desc}
-              </span>
-            </li>
+      {/* Card 2 — Decision Verdict */}
+      {selectedOption && explanation && verdictColor && (
+        <div className={`insight-card insight-card-verdict verdict-${verdictColor}`}>
+          <p className="panel-label">Decision Verdict</p>
+          <p className="insight-text">{explanation}</p>
+        </div>
+      )}
+
+      {/* Card 3 — Why It Matters */}
+      {selectedOption && (
+        <div className="insight-card insight-card-why">
+          {whyRows.map(row => (
+            <div key={row.label} className="insight-why-row">
+              <span className="insight-why-icon">{row.icon}</span>
+              <div className="insight-why-content">
+                <span className="insight-why-label">{row.label}</span>
+                {(expandAnalysis ? row.full : row.bullet) && (
+                  <p className="insight-bullet">• {expandAnalysis ? row.full : row.bullet}</p>
+                )}
+              </div>
+            </div>
           ))}
-        </ul>
-      </div>
+          <button
+            className="show-more-btn"
+            style={{ color: 'var(--text-muted)', marginTop: '4px' }}
+            onClick={() => setExpandAnalysis(v => !v)}
+          >
+            {expandAnalysis ? 'Collapse analysis ↑' : 'Expand full analysis ↓'}
+          </button>
+        </div>
+      )}
+
+      {/* Card 4 — Counterfactual */}
+      {previewOption && selectedOption && (
+        <div className="insight-card insight-card-cf">
+          {renderComparisonSummary(selectedOption, previewOption)}
+        </div>
+      )}
+
+      {/* Placeholder when nothing selected */}
+      {!selectedOption && !insightExperience && (
+        <div className="insight-block insight-empty">
+          <p className="panel-label">Decision insight</p>
+          <p className="insight-placeholder">Select an option to see the consequence.</p>
+        </div>
+      )}
 
     </div>
   )
