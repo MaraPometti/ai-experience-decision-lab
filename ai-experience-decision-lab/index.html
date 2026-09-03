@@ -2,12 +2,38 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ai-experience-decision-lab</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>AI Experience Decision Lab</title>
+    <meta
+      name="description"
+      content="A decision simulation for executive education: design an AI-powered SME banking journey across seven stages, balancing customer experience, trust, retention and commercial value."
+    />
+
+    <!-- Dark UI: keeps mobile browser chrome from framing the app in white -->
+    <meta name="theme-color" content="#050d15" />
+
+    <!-- Link previews, since these URLs get shared with teams and colleagues -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="AI Experience Decision Lab" />
+    <meta
+      property="og:description"
+      content="Design an AI-powered SME banking journey across seven stages, balancing customer experience, trust, retention and commercial value."
+    />
+    <meta property="og:url" content="https://marapometti.github.io/ai-experience-decision-lab/" />
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="max-width:520px;margin:15vh auto;padding:0 24px;font-family:system-ui,sans-serif;color:#ebfaff;text-align:center">
+        <h1 style="font-size:20px;margin:0 0 8px">AI Experience Decision Lab</h1>
+        <p style="font-size:14px;line-height:1.6;color:#9bb7c6;margin:0">
+          This simulation needs JavaScript enabled. Please turn it on and reload the page.
+        </p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

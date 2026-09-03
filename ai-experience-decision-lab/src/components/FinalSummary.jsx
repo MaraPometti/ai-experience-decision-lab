@@ -1,32 +1,5 @@
-// ── Qualitative result label ──────────────────────────────────────────────────
-// Thresholds calibrated against the scenario's scoreImpact range:
-//   all-best CEI ≈ +58   all-worst CEI ≈ −17
-function getResult(cei) {
-  if (cei >= 40) return {
-    label: 'High-Value AI Experience',
-    cls: 'result-green',
-    description:
-      'Your decisions consistently created high impact. The customer journey rose well above the baseline and closely matched the best possible AI outcome.',
-  }
-  if (cei >= 20) return {
-    label: 'Balanced but Moderate Strategy',
-    cls: 'result-blue',
-    description:
-      'A solid set of decisions that moved the journey above baseline. Good choices in several stages, but some high-value opportunities were not taken.',
-  }
-  if (cei >= 5) return {
-    label: 'Efficient but Low Impact',
-    cls: 'result-amber',
-    description:
-      'Cautious decisions created modest improvements. Major mistakes were avoided, but significant value was left uncaptured across the journey.',
-  }
-  return {
-    label: 'Misaligned AI Strategy',
-    cls: 'result-red',
-    description:
-      'The combination of choices created drag at multiple stages. Some short-term gains masked a deeper decline that built up across the journey.',
-  }
-}
+import { useState } from 'react'
+import { scoreRun, getBand, NO_DECISION } from '../lib/scoring'
 
 // ── Insight generation ────────────────────────────────────────────────────────
 // Derived entirely from path values — no invented data.
@@ -127,6 +100,20 @@ const SCORE_META = {
   retention: { label: 'Retention Impact', hint: 'Likelihood customers stayed' },
 }
 
+const PART_META = {
+  revenue:          'Revenue',
+  customerValue:    'Customer value',
+  cei:              'CEI',
+  trust:            'Trust',
+  adoption:         'Adoption (retention)',
+  budgetDiscipline: 'Budget discipline',
+}
+
+function fmtM(v) {
+  const sign = v < 0 ? '−' : '+'
+  return `${sign}£${(Math.abs(v) / 1_000_000).toFixed(1)}m`
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function FinalSummary({
   score,
@@ -137,10 +124,44 @@ export default function FinalSummary({
   onReset,
   teamName,
   choices,
+  reasons = [],
 }) {
-  const result   = getResult(score.cei)
-  const insights = generateInsights(livePath, baselinePath, bestPath, journeyStages)
+  const [copied, setCopied] = useState(false)
+
   const hasChoices = Array.isArray(choices) && choices.length > 0
+  const insights   = generateInsights(livePath, baselinePath, bestPath, journeyStages)
+
+  // Replay the choice string through the shared engine, so the team screen, the
+  // facilitator leaderboard and the debrief can never disagree.
+  const result      = hasChoices ? scoreRun(choices) : null
+  const finalScore  = result ? result.score : score
+  const band        = getBand(result ? result.composite : 0)
+  const hasReasons  = reasons.some(r => (r || '').trim().length > 0)
+
+  function handleCopy() {
+    const lines = [
+      `Team: ${teamName || '—'}`,
+      `Choices: ${hasChoices ? choices.join('') : '—'}`,
+      result ? `Balance score: ${result.composite}/100 — ${band.label}` : '',
+      result ? `Revenue: ${fmtM(result.revenueDelta)} · Budget left: ${fmtM(result.budgetRemaining)}` : '',
+      result ? `Trust: ${result.score.trust >= 0 ? '+' : ''}${result.score.trust} · Retention: ${result.score.retention >= 0 ? '+' : ''}${result.score.retention}` : '',
+      '',
+      'Reasoning:',
+      ...journeyStages.map((stage, i) => {
+        const choice = choices?.[i] ?? '—'
+        const note   = (reasons[i] || '').trim() || '(no reasoning recorded)'
+        return `  ${i + 1}. ${stage} — ${choice}: ${note}`
+      }),
+    ].filter(Boolean)
+
+    try {
+      navigator.clipboard.writeText(lines.join('\n'))
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    } catch {
+      setCopied(false)
+    }
+  }
 
   return (
     <div className="final-summary">
@@ -160,7 +181,9 @@ export default function FinalSummary({
               <div key={i} className="choice-item">
                 {i > 0 && <span className="choice-arrow">→</span>}
                 <div className="choice-bubble-wrap">
-                  <div className="choice-bubble">{choice}</div>
+                  <div className={`choice-bubble ${choice === NO_DECISION ? 'choice-bubble-skipped' : ''}`}>
+                    {choice}
+                  </div>
                   <span className="choice-stage">
                     {(journeyStages[i] || '').slice(0, 3)}
                   </span>
@@ -177,12 +200,54 @@ export default function FinalSummary({
 
       {(teamName || hasChoices) && <hr className="summary-divider" />}
 
-      {/* ── Result label ── */}
+      {/* ── Balance score ── */}
       <div className="summary-section">
         <p className="summary-section-label">Simulation complete</p>
-        <div className={`result-badge ${result.cls}`}>{result.label}</div>
-        <p className="summary-description">{result.description}</p>
+        {result && (
+          <div className="balance-score">
+            <span className="balance-score-value">{result.composite}</span>
+            <span className="balance-score-max">/ 100 balance score</span>
+          </div>
+        )}
+        <div className={`result-badge ${band.cls}`}>{band.label}</div>
+        <p className="summary-description">{band.description}</p>
       </div>
+
+      {/* ── Weighted scorecard ── */}
+      {result && (
+        <>
+          <hr className="summary-divider" />
+          <div className="summary-section">
+            <p className="summary-section-label">Balanced scorecard</p>
+            <div className="scorecard-list">
+              {Object.entries(PART_META).map(([key, label]) => {
+                const pct    = Math.round((result.parts[key] ?? 0) * 100)
+                const weight = Math.round((result.weights[key] ?? 0) * 100)
+                return (
+                  <div key={key} className="scorecard-row">
+                    <span className="scorecard-label">{label}</span>
+                    <span className="scorecard-weight">{weight}%</span>
+                    <span className="scorecard-track">
+                      <span className="scorecard-fill" style={{ width: `${pct}%` }} />
+                    </span>
+                    <span className="scorecard-pct">{pct}</span>
+                  </div>
+                )
+              })}
+            </div>
+            <p className="scorecard-note">
+              Revenue is 30% of the result, not all of it. The remaining 70% rewards customer
+              value, trust, retention and spending discipline.
+            </p>
+            {result.penalty > 0 && (
+              <p className="scorecard-penalty">
+                ⚠️ Over budget by {fmtM(-result.overspend).replace('−', '')} — {result.penalty} points
+                deducted.
+              </p>
+            )}
+          </div>
+        </>
+      )}
 
       <hr className="summary-divider" />
 
@@ -190,7 +255,7 @@ export default function FinalSummary({
       <div className="summary-section">
         <p className="summary-section-label">Final scores</p>
         <div className="summary-score-grid">
-          {Object.entries(score).map(([key, value]) => {
+          {Object.entries(finalScore).map(([key, value]) => {
             const meta = SCORE_META[key] ?? { label: key, hint: '' }
             return (
               <div key={key} className="summary-score-item">
@@ -203,7 +268,40 @@ export default function FinalSummary({
             )
           })}
         </div>
+        {result && (
+          <div className="summary-financials">
+            <span>Revenue impact <strong>{fmtM(result.revenueDelta)}</strong></span>
+            <span>AI spend <strong>£{(result.aiSpent / 1_000_000).toFixed(1)}m</strong></span>
+            <span className={result.overspend > 0 ? 'stat-over' : undefined}>
+              Budget left <strong>{fmtM(result.budgetRemaining)}</strong>
+            </span>
+          </div>
+        )}
       </div>
+
+      {/* ── Recorded reasoning ── */}
+      {hasReasons && (
+        <>
+          <hr className="summary-divider" />
+          <div className="summary-section">
+            <p className="summary-section-label">Your reasoning</p>
+            <ul className="reasoning-list">
+              {journeyStages.map((stage, i) => {
+                const note = (reasons[i] || '').trim()
+                if (!note) return null
+                return (
+                  <li key={i} className="reasoning-item">
+                    <span className="reasoning-stage">
+                      {stage} · {choices?.[i] ?? '—'}
+                    </span>
+                    <span className="reasoning-text">{note}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </>
+      )}
 
       <hr className="summary-divider" />
 
@@ -219,10 +317,15 @@ export default function FinalSummary({
 
       <hr className="summary-divider" />
 
-      {/* ── Restart ── */}
-      <button className="btn btn-restart" onClick={onReset}>
-        Restart Simulation
-      </button>
+      {/* ── Actions ── */}
+      <div className="summary-actions">
+        <button className="btn btn-secondary" onClick={handleCopy}>
+          {copied ? '✓ Copied' : 'Copy result for facilitator'}
+        </button>
+        <button className="btn btn-restart" onClick={onReset}>
+          Restart Simulation
+        </button>
+      </div>
 
     </div>
   )

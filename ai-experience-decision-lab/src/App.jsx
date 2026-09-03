@@ -6,6 +6,10 @@ import ValueChart from './components/ValueChart'
 import ScenarioHeader from './components/ScenarioHeader'
 import ExplanationPanel from './components/ExplanationPanel'
 import ScorePanel from './components/ScorePanel'
+import Leaderboard from './components/Leaderboard'
+import Copyright from './components/Copyright'
+import { orderedOptions, NO_DECISION } from './lib/scoring'
+import { runKey, loadRun, saveRun, clearRun } from './lib/persistence'
 
 const INITIAL_SCORE = { cei: 0, trust: 0, cost: 0, retention: 0 }
 
@@ -43,6 +47,14 @@ function costLabel(v) {
   return              { text: 'Expensive',        cls: 'chip-negative' }
 }
 
+// Play mode gets direction only. Exact figures are an answer key: with them on
+// screen a team can read off which option scored best.
+function trendMark(v) {
+  if (v > 0) return '▲'
+  if (v < 0) return '▼'
+  return '▬'
+}
+
 function retentionLabel(v) {
   if (v == null) return { text: '—',       cls: 'chip-neutral' }
   if (v >= 3)    return { text: 'Strong',   cls: 'chip-positive' }
@@ -52,14 +64,6 @@ function retentionLabel(v) {
 }
 
 export default function App() {
-  // ── URL parameter detection ────────────────────────────────────────────────
-  const params       = new URLSearchParams(window.location.search)
-  const getParam     = (key) => (params.get(key) || '').replace(/\/+$/, '')
-  const isPlayMode   = params.has('team') || getParam('play') === 'true'
-  const isRevealMode = !isPlayMode
-  const timerMinutes = parseInt(getParam('timer') || '20', 10)
-  const teamParam    = getParam('team')
-
   const {
     scenarioTitle,
     scenarioSubtitle,
@@ -70,30 +74,81 @@ export default function App() {
     simulationConfig,
   } = scenario
 
+  // ── URL parameter detection ────────────────────────────────────────────────
+  // Play (blind) is the DEFAULT, so the bare URL is safe to hand to students.
+  // Answers are unlocked only by an explicit ?reveal=true.
+  const params   = new URLSearchParams(window.location.search)
+  const getParam = (key) => (params.get(key) || '').replace(/\/+$/, '')
+
+  const isLeaderboardMode = getParam('leaderboard') === 'true'
+  const isRevealMode      = getParam('reveal') === 'true'
+  const isPlayMode        = !isRevealMode && !isLeaderboardMode
+
+  const teamParam = getParam('team')
+
+  // Timing. The default is one 20-minute clock for the whole session, started
+  // by the team with the Start button — it does not run until they say go.
+  //   ?timer=<minutes>       total session length (default 20)
+  //   ?roundtimer=<seconds>  switches to a per-round window of that length
+  const roundTimerParam = parseInt(getParam('roundtimer') || '', 10)
+  const totalTimerParam = parseInt(getParam('timer') || '', 10)
+
+  const isPerRoundTimer = Number.isFinite(roundTimerParam) && roundTimerParam > 0
+  const sessionMinutes  = Number.isFinite(totalTimerParam) && totalTimerParam > 0
+    ? totalTimerParam
+    : 20
+
+  // The length of one countdown: a single round in per-round mode, otherwise
+  // the whole session.
+  const timerSeconds = isPerRoundTimer ? roundTimerParam : sessionMinutes * 60
+
+  // ── restore any run already in progress ────────────────────────────────────
+  // Read once, during the first render, so the whole simulation starts from the
+  // saved state instead of flashing a fresh game and correcting itself.
+  const [savedRun] = useState(() =>
+    (isPlayMode && teamParam) ? loadRun(runKey(teamParam)) : null
+  )
+
+  const savedOption = (() => {
+    if (!savedRun?.selectedOptionId) return null
+    const round = rounds[savedRun.currentRoundIndex ?? 0]
+    return round?.options.find(o => o.id === savedRun.selectedOptionId) ?? null
+  })()
+
   // ── simulation state ───────────────────────────────────────────────────────
-  const [currentRoundIndex,    setCurrentRoundIndex]    = useState(0)
-  const [livePath,             setLivePath]             = useState([...baselinePath])
+  const [currentRoundIndex,    setCurrentRoundIndex]    = useState(savedRun?.currentRoundIndex ?? 0)
+  const [livePath,             setLivePath]             = useState(savedRun?.livePath ?? [...baselinePath])
   const [roundStartPath,       setRoundStartPath]       = useState(null)
   const [roundStartKpis,       setRoundStartKpis]       = useState(null)
-  const [selectedOption,       setSelectedOption]       = useState(null)
+  const [selectedOption,       setSelectedOption]       = useState(savedOption)
   const [previewOption,        setPreviewOption]        = useState(null)
-  const [explanation,          setExplanation]          = useState('')
-  const [insightExperience,    setInsightExperience]    = useState('')
-  const [score,                setScore]                = useState({ ...INITIAL_SCORE })
-  const [isComplete,           setIsComplete]           = useState(false)
-  const [hasSimulationStarted, setHasSimulationStarted] = useState(false)
-  const [budgetRemaining,      setBudgetRemaining]      = useState(simulationConfig.startingBudget)
-  const [cumulativeRevDelta,   setCumulativeRevDelta]   = useState(0)
-  const [history,              setHistory]              = useState([])
-  const [choices,              setChoices]              = useState([])
+  const [explanation,          setExplanation]          = useState(savedOption?.explanation ?? '')
+  const [insightExperience,    setInsightExperience]    = useState(savedOption?.insightExperience ?? '')
+  const [score,                setScore]                = useState(savedRun?.score ?? { ...INITIAL_SCORE })
+  const [isComplete,           setIsComplete]           = useState(Boolean(savedRun?.isComplete))
+  const [hasSimulationStarted, setHasSimulationStarted] = useState(Boolean(savedRun?.hasSimulationStarted))
+  const [budgetRemaining,      setBudgetRemaining]      = useState(savedRun?.budgetRemaining ?? simulationConfig.startingBudget)
+  const [cumulativeRevDelta,   setCumulativeRevDelta]   = useState(savedRun?.cumulativeRevDelta ?? 0)
+  const [history,              setHistory]              = useState(savedRun?.history ?? [])
+  const [choices,              setChoices]              = useState(savedRun?.choices ?? [])
+  const [reasons,              setReasons]              = useState(savedRun?.reasons ?? [])
 
   // ── team / game state ──────────────────────────────────────────────────────
   const [teamName,    setTeamName]    = useState(teamParam)
   const [gameStarted, setGameStarted] = useState(isRevealMode || Boolean(teamParam))
 
   // ── timer state ────────────────────────────────────────────────────────────
-  const [timeLeft,    setTimeLeft]    = useState(timerMinutes * 60)
-  const [timerPaused, setTimerPaused] = useState(false)
+  const [timeLeft,     setTimeLeft]     = useState(savedRun?.timeLeft ?? timerSeconds)
+  const [timerPaused,  setTimerPaused]  = useState(false)
+  const [timerStarted, setTimerStarted] = useState(Boolean(savedRun?.timerStarted))
+
+  // ── persistence state ──────────────────────────────────────────────────────
+  const [wasRestored, setWasRestored] = useState(Boolean(savedRun))
+
+  // ── review state ───────────────────────────────────────────────────────────
+  // Team play can look back at earlier rounds and their notes, but read-only:
+  // stepping back must never re-open a decision that has already been scored.
+  const [reviewIndex, setReviewIndex] = useState(null)
 
   // ── drawer / overlay state ─────────────────────────────────────────────────
   const [insightOpen,     setInsightOpen]     = useState(false)
@@ -103,14 +158,65 @@ export default function App() {
   // ── chart toggles ──────────────────────────────────────────────────────────
   const [showBestPath, setShowBestPath] = useState(true)
 
+  const storageKey = isPlayMode ? runKey(teamName) : null
+
   // ── timer effect ───────────────────────────────────────────────────────────
+  // Nothing counts down until the team presses Start. In per-round mode the
+  // clock also stops once a decision is locked, so the captain can write up the
+  // reasoning without racing it; a session clock runs straight through.
   useEffect(() => {
-    if (!gameStarted || isRevealMode || isComplete || timerPaused) return
+    if (!gameStarted || !isPlayMode || isComplete || timerPaused) return
+    if (!timerStarted) return
+    if (isPerRoundTimer && selectedOption) return
     const id = setInterval(() => setTimeLeft(t => Math.max(0, t - 1)), 1000)
     return () => clearInterval(id)
-  }, [gameStarted, isRevealMode, isComplete, timerPaused])
+  }, [gameStarted, isPlayMode, isComplete, timerPaused, timerStarted, isPerRoundTimer, selectedOption])
+
+  // ── persist the run ────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!isPlayMode || !gameStarted || !storageKey) return
+    saveRun(storageKey, {
+      currentRoundIndex,
+      livePath,
+      score,
+      budgetRemaining,
+      cumulativeRevDelta,
+      choices,
+      reasons,
+      history,
+      isComplete,
+      hasSimulationStarted,
+      timeLeft,
+      timerStarted,
+      selectedOptionId: selectedOption?.id ?? null,
+    })
+  }, [
+    isPlayMode, gameStarted, storageKey,
+    currentRoundIndex, livePath, score, budgetRemaining, cumulativeRevDelta,
+    choices, reasons, history, isComplete, hasSimulationStarted, timeLeft, timerStarted, selectedOption,
+  ])
 
   const currentRound = isComplete ? null : rounds[currentRoundIndex]
+
+  // The clock ran out with nothing locked in for this round.
+  const roundExpired = isPlayMode && !isComplete && !selectedOption && timerStarted && timeLeft <= 0
+
+  // ── review derivations ─────────────────────────────────────────────────────
+  const isReviewing    = isPlayMode && !isComplete && reviewIndex !== null
+  const viewRoundIndex = isReviewing ? reviewIndex : currentRoundIndex
+  const viewRound      = isComplete ? null : rounds[viewRoundIndex]
+
+  const reviewChoiceId = isReviewing ? choices[reviewIndex] : null
+  const reviewOption   = reviewChoiceId && reviewChoiceId !== NO_DECISION
+    ? rounds[reviewIndex].options.find(o => o.id === reviewChoiceId) ?? null
+    : null
+
+  // What the option cards should show as chosen for the round on screen.
+  const displayedOption = isReviewing ? reviewOption : selectedOption
+
+  const canGoBack = isPlayMode
+    ? !isComplete && viewRoundIndex > 0
+    : history.length > 0
 
   // ── kpis snapshot ──────────────────────────────────────────────────────────
   const kpis = {
@@ -141,8 +247,10 @@ export default function App() {
 
   // ── display financials ─────────────────────────────────────────────────────
   const revDeltaM = (Math.abs(cumulativeRevDelta) / 1_000_000).toFixed(1)
-  const budgetM   = (budgetRemaining / 1_000_000).toFixed(1)
   const budgetPct = Math.round((budgetRemaining / simulationConfig.startingBudget) * 100)
+
+  const overspendM  = (Math.max(0, -budgetRemaining) / 1_000_000).toFixed(1)
+  const budgetLabel = `${budgetRemaining < 0 ? '−' : ''}£${(Math.abs(budgetRemaining) / 1_000_000).toFixed(1)}m`
 
   const cfRevDelta = previewKpis
     ? previewKpis.cumulativeRevenue - simulationConfig.startingRevenueBase
@@ -160,18 +268,22 @@ export default function App() {
   })()
 
   // ── timer class ────────────────────────────────────────────────────────────
+  // Thresholds are fractions of the round window, so they read correctly whether
+  // the window is 60 seconds or three minutes.
+  const timerFrac = timerSeconds > 0 ? timeLeft / timerSeconds : 0
+
   const timerClass =
-    timeLeft > 600 ? 'timer-calm'     :
-    timeLeft > 300 ? 'timer-warm'     :
-    timeLeft > 120 ? 'timer-pressure' :
-    timeLeft > 0   ? 'timer-urgent'   :
+    timerFrac > 0.5  ? 'timer-calm'     :
+    timerFrac > 0.25 ? 'timer-warm'     :
+    timerFrac > 0.1  ? 'timer-pressure' :
+    timeLeft  > 0    ? 'timer-urgent'   :
     'timer-expired'
 
-  const timerBarPct   = Math.max(0, (timeLeft / (timerMinutes * 60)) * 100)
+  const timerBarPct   = Math.max(0, Math.min(100, timerFrac * 100))
   const timerBarColor =
-    timeLeft > 600 ? 'timer-bar-green' :
-    timeLeft > 300 ? 'timer-bar-amber' :
-    timeLeft > 0   ? 'timer-bar-red'   :
+    timerFrac > 0.5  ? 'timer-bar-green' :
+    timerFrac > 0.25 ? 'timer-bar-amber' :
+    timeLeft  > 0    ? 'timer-bar-red'   :
     'timer-bar-expired'
 
   // ── chip colour helpers — always neutral in play mode ─────────────────────
@@ -232,7 +344,32 @@ export default function App() {
   }
 
   function handleNextRound() {
-    if (!selectedOption || isComplete) return
+    // Reviewing an earlier round: step forward through the review, and drop back
+    // into live play once we catch up with the current round.
+    if (isReviewing) {
+      const next = reviewIndex + 1
+      setReviewIndex(next >= currentRoundIndex ? null : next)
+      return
+    }
+
+    if (isComplete) return
+    if (!selectedOption && !roundExpired) return
+
+    // The window closed with nothing locked in: record the round as skipped.
+    // No movement on any axis, which is its own penalty against the baseline.
+    if (!selectedOption && roundExpired) {
+      setHistory(prev => [...prev, {
+        roundIndex:         currentRoundIndex,
+        livePath:           [...livePath],
+        score:              { ...score },
+        budgetRemaining,
+        cumulativeRevDelta,
+        hasSimulationStarted,
+      }])
+      setChoices(prev => [...prev, NO_DECISION])
+      setHasSimulationStarted(true)
+    }
+
     const nextIndex = currentRoundIndex + 1
     if (nextIndex >= rounds.length) {
       setIsComplete(true)
@@ -247,9 +384,22 @@ export default function App() {
     setRoundStartKpis(null)
     setInsightOpen(false)
     setKpiOpen(false)
+    // A per-round window restarts each round; a session clock runs straight through.
+    if (isPerRoundTimer) {
+      setTimeLeft(timerSeconds)
+      setTimerPaused(false)
+    }
   }
 
   function handlePrevRound() {
+    // Team play: read-only step back through completed rounds and their notes.
+    // The scored decision itself is never re-opened.
+    if (isPlayMode) {
+      if (isComplete || viewRoundIndex === 0) return
+      setReviewIndex(viewRoundIndex - 1)
+      return
+    }
+
     if (history.length === 0) return
     const prev = history[history.length - 1]
     setHistory(h => h.slice(0, -1))
@@ -269,6 +419,11 @@ export default function App() {
     setInsightOpen(false)
     setKpiOpen(false)
     setChoices(prev => prev.slice(0, -1))
+    setReasons(prev => prev.slice(0, -1))
+    if (isPerRoundTimer) {
+      setTimeLeft(timerSeconds)
+      setTimerPaused(false)
+    }
   }
 
   function handleReset() {
@@ -290,11 +445,52 @@ export default function App() {
     setKpiOpen(false)
     setMethodologyOpen(false)
     setChoices([])
-    setTimeLeft(timerMinutes * 60)
+    setReasons([])
+    setTimeLeft(timerSeconds)
     setTimerPaused(false)
+    setTimerStarted(false)
+    setWasRestored(false)
+    setReviewIndex(null)
+    clearRun(storageKey)
   }
 
-  // ── team entry screen (play mode only) ────────────────────────────────────
+  // Starting from the team-entry screen: pick up a run already saved under that
+  // team name, so a refresh mid-session resumes instead of starting over.
+  function handleStartGame() {
+    const saved = loadRun(runKey(teamName))
+    if (saved) {
+      const roundIndex = saved.currentRoundIndex ?? 0
+      const round      = rounds[roundIndex]
+      const option     = saved.selectedOptionId
+        ? round?.options.find(o => o.id === saved.selectedOptionId) ?? null
+        : null
+
+      setCurrentRoundIndex(roundIndex)
+      setLivePath(saved.livePath)
+      setScore(saved.score)
+      setBudgetRemaining(saved.budgetRemaining)
+      setCumulativeRevDelta(saved.cumulativeRevDelta)
+      setChoices(saved.choices)
+      setReasons(saved.reasons || [])
+      setHistory(saved.history || [])
+      setIsComplete(Boolean(saved.isComplete))
+      setHasSimulationStarted(Boolean(saved.hasSimulationStarted))
+      setTimeLeft(saved.timeLeft ?? timerSeconds)
+      setTimerStarted(Boolean(saved.timerStarted))
+      setSelectedOption(option)
+      setExplanation(option?.explanation ?? '')
+      setInsightExperience(option?.insightExperience ?? '')
+      setWasRestored(true)
+    }
+    setGameStarted(true)
+  }
+
+  // ── facilitator leaderboard ───────────────────────────────────────────────
+  if (isLeaderboardMode) {
+    return <Leaderboard scenarioTitle={scenarioTitle} />
+  }
+
+  // ── game entry screen (play mode only) ────────────────────────────────────
   if (!gameStarted) {
     return (
       <div className="team-entry">
@@ -308,7 +504,7 @@ export default function App() {
             value={teamName}
             onChange={e => setTeamName(e.target.value)}
             onKeyDown={e => {
-              if (e.key === 'Enter' && teamName.trim().length >= 2) setGameStarted(true)
+              if (e.key === 'Enter' && teamName.trim().length >= 2) handleStartGame()
             }}
             placeholder="Team Alpha"
             autoFocus
@@ -316,14 +512,19 @@ export default function App() {
           <button
             className="btn btn-primary team-entry-btn"
             disabled={teamName.trim().length < 2}
-            onClick={() => setGameStarted(true)}
+            onClick={handleStartGame}
           >
             Start the Challenge →
           </button>
           <p className="team-entry-timer-note">
-            You have {timerMinutes} minutes. Make it count.
+            {isPerRoundTimer
+              ? `${rounds.length} decisions · ${timerSeconds} seconds each.`
+              : `${rounds.length} decisions · ${sessionMinutes} minutes for the whole session.`}
+            {' '}The clock starts when you press Start. Once a decision is locked it
+            is final, so agree before you commit.
           </p>
         </div>
+        <Copyright />
       </div>
     )
   }
@@ -341,39 +542,49 @@ export default function App() {
         </div>
         <div className="header-meta">
 
-          {/* Timer pill — play mode only */}
-          {!isRevealMode && !isComplete && (
+          {/* Timer pill — play mode only. No pause or restart controls: a clock
+              the team can stop is not a decision window. */}
+          {isPlayMode && !isComplete && (
             <div className="timer-wrap">
-              <div className={`timer-pill ${timerClass}`}>
+              <div className={`timer-pill ${
+                !timerStarted ? 'timer-idle'
+                  : (isPerRoundTimer && selectedOption) ? 'timer-locked'
+                  : timerClass
+              }`}>
                 <span className="timer-text">
-                  {timeLeft === 0
-                    ? "TIME'S UP"
-                    : `Round ${currentRoundIndex + 1}/${rounds.length} · ${formatTime(timeLeft)}`}
+                  {!timerStarted
+                    ? `Round ${currentRoundIndex + 1}/${rounds.length} · ${formatTime(timeLeft)}`
+                    : (isPerRoundTimer && selectedOption)
+                      ? `Round ${currentRoundIndex + 1}/${rounds.length} · Locked`
+                      : timeLeft === 0
+                        ? "TIME'S UP"
+                        : `Round ${currentRoundIndex + 1}/${rounds.length} · ${formatTime(timeLeft)}`}
                 </span>
-                <button
-                  className="timer-btn"
-                  onClick={() => setTimerPaused(v => !v)}
-                  title={timerPaused ? 'Resume timer' : 'Pause timer'}
-                >
-                  {timerPaused ? '▶' : '⏸'}
-                </button>
-                <button
-                  className="timer-btn"
-                  onClick={() => setTimeLeft(timerMinutes * 60)}
-                  title="Restart timer"
-                >
-                  ↺
-                </button>
+                {!timerStarted && (
+                  <button
+                    className="timer-btn timer-start-btn"
+                    onClick={() => setTimerStarted(true)}
+                    title="Start the countdown"
+                  >
+                    ▶ Start
+                  </button>
+                )}
               </div>
-              {timeLeft > 0 && timeLeft <= 120 && (
+              {timerStarted && !selectedOption && timeLeft > 0 && timerFrac <= 0.25 && (
                 <div className="timer-label">HURRY!</div>
               )}
             </div>
           )}
 
           {/* Team name — play mode */}
-          {!isRevealMode && teamName && (
+          {isPlayMode && teamName && (
             <span className="badge badge-stage">{teamName}</span>
+          )}
+
+          {/* Reassures a team that a refresh resumed their run rather than
+              restarting it — the one part of the old summary panel worth keeping. */}
+          {isPlayMode && wasRestored && (
+            <span className="badge badge-restored">Progress restored</span>
           )}
 
           {isComplete ? (
@@ -390,7 +601,7 @@ export default function App() {
       </header>
 
       {/* ── Timer progress bar — play mode only ── */}
-      {!isRevealMode && (
+      {isPlayMode && !isComplete && (
         <div className="timer-bar-container">
           <div
             className={`timer-bar ${timerBarColor}`}
@@ -425,22 +636,89 @@ export default function App() {
 
         {/* LEFT: decision area */}
         <section className="col col-left">
-          {currentRound ? (
+          {viewRound ? (
             <>
+              {/* Reviewing an earlier round — read-only */}
+              {isReviewing && (
+                <div className="review-banner">
+                  <span className="review-banner-title">
+                    Reviewing Round {viewRoundIndex + 1} of {rounds.length}
+                  </span>
+                  <span className="review-banner-text">
+                    Read-only. Your decision here is locked — notes are still editable.
+                  </span>
+                  <button
+                    className="btn btn-subtle review-banner-btn"
+                    onClick={() => setReviewIndex(null)}
+                  >
+                    Back to Round {currentRoundIndex + 1} →
+                  </button>
+                </div>
+              )}
+
               <ScenarioHeader
-                roundTitle={currentRound.title}
-                aishaContext={currentRound?.aishaContext}
+                roundTitle={viewRound.title}
+                tradeoffTagline={viewRound.tradeoffTagline}
+                prompt={viewRound.prompt}
+                aishaContext={viewRound?.aishaContext}
                 isFinished={isComplete}
               />
               <OptionCards
-                options={currentRound.options}
-                selectedOption={selectedOption}
+                options={orderedOptions(viewRound)}
+                selectedOption={displayedOption}
                 previewOption={previewOption}
-                bestOptionId={currentRound.bestOptionId}
+                bestOptionId={viewRound.bestOptionId}
                 onSelectOption={handleSelectOption}
                 onPreviewOption={handlePreviewOption}
                 showBest={isRevealMode}
+                requireConfirm={isPlayMode && !isReviewing}
+                isExpired={roundExpired || isReviewing}
               />
+
+              {/* Reviewed round that timed out */}
+              {isReviewing && reviewChoiceId === NO_DECISION && (
+                <div className="round-expired">
+                  <p className="round-expired-title">This round timed out</p>
+                  <p className="round-expired-text">
+                    No decision was recorded, so it scored nothing on any axis.
+                  </p>
+                </div>
+              )}
+
+              {/* Window closed with nothing locked in */}
+              {!isReviewing && roundExpired && (
+                <div className="round-expired">
+                  <p className="round-expired-title">Time expired — no decision recorded</p>
+                  <p className="round-expired-text">
+                    This round scores nothing on any axis. Move on to the next decision.
+                  </p>
+                </div>
+              )}
+
+              {/* Captain's reasoning — play mode, once the decision is locked.
+                  Stays editable while reviewing an earlier round. */}
+              {isPlayMode && (displayedOption || isReviewing) && (
+                <div className="decision-notes">
+                  <label className="decision-notes-label" htmlFor="decision-note">
+                    {displayedOption
+                      ? `Why did you choose ${displayedOption.id}? (captain records the reasoning)`
+                      : 'Notes for this round'}
+                  </label>
+                  <textarea
+                    id="decision-note"
+                    className="decision-notes-input"
+                    value={reasons[viewRoundIndex] || ''}
+                    onChange={e => {
+                      const next = [...reasons]
+                      next[viewRoundIndex] = e.target.value
+                      setReasons(next)
+                    }}
+                    rows={3}
+                    placeholder="The trade-off we accepted, and why…"
+                  />
+                </div>
+              )}
+
               {/* Aisha's outcome — reveal mode only */}
               {isRevealMode && selectedOption && insightExperience && (
                 <div className="aisha-outcome">
@@ -459,6 +737,7 @@ export default function App() {
               onReset={handleReset}
               teamName={teamName}
               choices={choices}
+              reasons={reasons}
             />
           )}
         </section>
@@ -526,7 +805,7 @@ export default function App() {
             <div className="info-strip-left">
               <div className="budget-gauge-header">
                 <span className="budget-gauge-label">AI Budget</span>
-                <span className="budget-gauge-value">{budgetPct}% · £{budgetM}m</span>
+                <span className="budget-gauge-value">{budgetPct}% · {budgetLabel}</span>
               </div>
               <div className="budget-gauge-track">
                 <div
@@ -538,10 +817,26 @@ export default function App() {
             <div className="info-strip-right">
               {/* FIX 6: 4 chips always; 2 extra in reveal mode */}
               <div className="chip-row">
-                <span className={`chip ${revChipClass}`}>💰 {cumulativeRevDelta >= 0 ? '+' : '−'}£{revDeltaM}m revenue</span>
-                <span className={`chip ${budgetChipClass}`}>🏦 £{budgetM}m left</span>
-                <span className={`chip ${trustChipClass}`}>❤️ Trust: {score.trust >= 0 ? '+' : ''}{score.trust}</span>
-                <span className={`chip ${ceiChipClass}`}>📈 CEI: {score.cei >= 0 ? '+' : ''}{score.cei}</span>
+                {isPlayMode ? (
+                  <>
+                    <span className={`chip ${revChipClass}`}>💰 Revenue {trendMark(cumulativeRevDelta)}</span>
+                    <span className={`chip ${budgetChipClass}`}>🏦 {budgetLabel} left</span>
+                    <span className={`chip ${trustChipClass}`}>❤️ Trust {trendMark(score.trust)}</span>
+                    <span className={`chip ${ceiChipClass}`}>📈 CEI {trendMark(score.cei)}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className={`chip ${revChipClass}`}>💰 {cumulativeRevDelta >= 0 ? '+' : '−'}£{revDeltaM}m revenue</span>
+                    <span className={`chip ${budgetChipClass}`}>🏦 {budgetLabel} left</span>
+                    <span className={`chip ${trustChipClass}`}>❤️ Trust: {score.trust >= 0 ? '+' : ''}{score.trust}</span>
+                    <span className={`chip ${ceiChipClass}`}>📈 CEI: {score.cei >= 0 ? '+' : ''}{score.cei}</span>
+                  </>
+                )}
+                {budgetRemaining < 0 && (
+                  <span className="chip chip-budget-overspent">
+                    ⚠️ Over budget by £{overspendM}m
+                  </span>
+                )}
                 {isRevealMode && (
                   <>
                     <span className={`chip ${costInfo.cls}`}>💸 Cost: {costInfo.text}</span>
@@ -560,19 +855,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Chart controls — reveal mode only */}
-          {isRevealMode && (
-            <div className="chart-controls">
-              <button
-                className={`chart-toggle toggle-best ${showBestPath ? 'active' : ''}`}
-                onClick={() => setShowBestPath(v => !v)}
-              >
-                <span className="toggle-dot dot-best" />
-                {showBestPath ? 'Hide' : 'Show'} Optimal AI Experience
-              </button>
-            </div>
-          )}
-
           {/* Chart */}
           <ValueChart
             stages={journeyStages}
@@ -584,6 +866,18 @@ export default function App() {
             showBaseline={isRevealMode}
             previewPath={isRevealMode ? previewPath : null}
           />
+
+          {/* Secondary chart control — reveal mode only, deliberately quiet */}
+          {isRevealMode && (
+            <div className="chart-controls">
+              <button
+                className="chart-toggle"
+                onClick={() => setShowBestPath(v => !v)}
+              >
+                {showBestPath ? 'Hide' : 'Show'} optimal experience
+              </button>
+            </div>
+          )}
 
         </section>
       </main>
@@ -601,7 +895,7 @@ export default function App() {
                 <p className="methodology-section-title">How the Indices Work</p>
                 <div className="methodology-index-list">
                   <p className="methodology-index-item"><strong>Revenue:</strong> Cumulative change in projected SME portfolio revenue based on each decision's impact on customer acquisition quality, activation depth, and retention probability. Positive values mean revenue gained versus the no-AI baseline.</p>
-                  <p className="methodology-index-item"><strong>Trust:</strong> Cumulative customer trust score. Each decision adds or removes trust based on transparency, explainability, and whether the AI acted in the customer's interest. Typical range: -20 to +30 across all seven rounds.</p>
+                  <p className="methodology-index-item"><strong>Trust:</strong> Cumulative customer trust score. Each decision adds or removes trust based on transparency, explainability, and whether the AI acted in the customer's interest. Reachable range: −24 to +36 across all seven rounds.</p>
                   <p className="methodology-index-item"><strong>CEI (Customer Economic Value Index):</strong> Composite measure combining engagement depth, feature adoption, and cross-sell readiness. Higher values indicate a more economically valuable customer relationship.</p>
                   <p className="methodology-index-item"><strong>Cost Efficiency:</strong> Per-round rating of how well the AI investment was allocated. Positive values indicate money well spent relative to outcomes. Negative values indicate overspend relative to alternatives available at that stage.</p>
                   <p className="methodology-index-item"><strong>Retention:</strong> Per-round impact on customer retention probability. Most relevant at Engagement, Retention, and Loyalty stages where customer decisions to stay or leave are directly influenced by the AI experience.</p>
@@ -611,7 +905,7 @@ export default function App() {
               <div className="methodology-section">
                 <p className="methodology-section-title">Customer Economic Value Index (CEI)</p>
                 <p className="methodology-text">
-                  The CEI is a normalised 0–100 index combining revenue contribution, retention
+                  The CEI is a normalised index — roughly 0–100, though value-destroying paths can fall below zero — combining revenue contribution, retention
                   probability, engagement intensity, and cost to serve — designed to track value
                   across the customer journey, not just at a single point. It is a simplified,
                   stage-based CLV approximation adapted from classical Customer Lifetime Value
@@ -647,21 +941,39 @@ export default function App() {
       {/* ── Footer ── */}
       <footer className="app-footer">
         <div className="footer-actions">
+          <Copyright className="copyright-footer" />
+          {/* In reveal mode Previous rewinds the simulation. In team play it is
+              a read-only walk back through completed rounds and their notes, so
+              a team can revisit reasoning without re-opening a scored decision. */}
           <button
             className="btn btn-secondary"
             onClick={handlePrevRound}
-            disabled={history.length === 0}
+            disabled={!canGoBack}
           >
-            ← Previous
+            {isPlayMode ? '← Previous round' : '← Previous'}
           </button>
           <button
             className="btn btn-primary"
             onClick={handleNextRound}
-            disabled={!selectedOption || isComplete}
+            disabled={isReviewing ? false : (!selectedOption && !roundExpired) || isComplete}
           >
-            Next Round →
+            {isReviewing
+              ? (reviewIndex + 1 >= currentRoundIndex
+                  ? `Back to Round ${currentRoundIndex + 1} →`
+                  : 'Forward →')
+              : roundExpired && !selectedOption
+                ? 'Skip Round →'
+                : 'Next Round →'}
           </button>
-          <button className="btn btn-secondary" onClick={handleReset}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              // A stray Reset used to silently destroy a team's whole run.
+              if (isPlayMode && hasSimulationStarted &&
+                  !window.confirm('Reset wipes this team’s entire run. Continue?')) return
+              handleReset()
+            }}
+          >
             Reset
           </button>
           {/* Hide Explanation — reveal mode only */}

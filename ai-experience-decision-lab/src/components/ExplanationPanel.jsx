@@ -122,20 +122,22 @@ export default function ExplanationPanel({
       {/* Card 3 — Why It Matters */}
       {selectedOption && (
         <div className="insight-card insight-card-why">
-          {whyRows.map(row => (
-            <div key={row.label} className="insight-why-row">
-              <span className="insight-why-icon">{row.icon}</span>
-              <div className="insight-why-content">
-                <span className="insight-why-label">{row.label}</span>
-                {(expandAnalysis ? row.full : row.bullet) && (
-                  <p className="insight-bullet">• {expandAnalysis ? row.full : row.bullet}</p>
-                )}
+          <p className="panel-label">Why It Matters</p>
+          <div className="insight-why-list">
+            {whyRows.map(row => (
+              <div key={row.label} className="insight-why-row">
+                <span className="insight-why-icon">{row.icon}</span>
+                <div className="insight-why-content">
+                  <span className="insight-why-label">{row.label}</span>
+                  {(expandAnalysis ? row.full : row.bullet) && (
+                    <p className="insight-bullet">{expandAnalysis ? row.full : row.bullet}</p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
           <button
-            className="show-more-btn"
-            style={{ color: 'var(--text-muted)', marginTop: '4px' }}
+            className="show-more-btn insight-expand-btn"
             onClick={() => setExpandAnalysis(v => !v)}
           >
             {expandAnalysis ? 'Collapse analysis ↑' : 'Expand full analysis ↓'}

@@ -23,13 +23,22 @@ function OptionCard({
   isPreviewed,
   isBest,
   isLocked,
+  isExpired,
+  isConfirming,
   showBest,
-  onSelectOption,
+  onApply,
   onPreviewOption,
 }) {
   const [detailOpen, setDetailOpen] = useState(false)
   const { headline, detail } = splitLabel(option.label)
   const cleanDetail = detail || null
+
+  const statusBadge = (() => {
+    if (showBest && isBest) return { emoji: '🔥', text: 'Strong fit' }
+    if (isSelected) return { emoji: '✅', text: 'Applied' }
+    if (showBest && isLocked) return { emoji: '🤔', text: 'Weaker choice' }
+    return null
+  })()
 
   return (
     <div
@@ -37,6 +46,7 @@ function OptionCard({
         'option-card',
         isSelected  ? 'option-selected'  : '',
         isPreviewed ? 'option-previewed'  : '',
+        isConfirming ? 'option-confirming' : '',
         isLocked && !isSelected ? 'option-locked' : '',
       ].filter(Boolean).join(' ')}
     >
@@ -49,28 +59,27 @@ function OptionCard({
           )}
           {cleanDetail && (
             <button className="show-detail-btn" onClick={() => setDetailOpen(v => !v)}>
-              {detailOpen ? 'Hide detail ↑' : 'Show detail ↓'}
+              <span className="show-detail-arrow">{detailOpen ? '−' : '+'}</span>
+              <span>{detailOpen ? 'Hide detail' : 'Show detail'}</span>
             </button>
           )}
         </div>
       </div>
 
       <div className="option-card-footer">
-        {showBest && isBest && (
-          <span className="badge-best">Best choice for this stage</span>
+        {statusBadge && (
+          <span className={`badge-status ${isBest ? 'status-good' : isSelected ? 'status-applied' : 'status-weak'}`}>
+            {statusBadge.emoji} {statusBadge.text}
+          </span>
         )}
 
-        {!isLocked && (
+        {!isLocked && !isExpired && (
           <button
-            className="btn btn-apply"
-            onClick={() => onSelectOption(option)}
+            className={`btn btn-apply ${isConfirming ? 'btn-apply-confirm' : ''}`}
+            onClick={() => onApply(option)}
           >
-            Apply
+            {isConfirming ? `Confirm ${option.id} — this is final` : 'Apply'}
           </button>
-        )}
-
-        {isSelected && (
-          <span className="badge-applied">Applied ✓</span>
         )}
 
         {showBest && isLocked && !isSelected && (
@@ -94,8 +103,26 @@ export default function OptionCards({
   onSelectOption,
   onPreviewOption,
   showBest,
+  requireConfirm = false,
+  isExpired = false,
 }) {
   const isLocked = selectedOption !== null
+  const [confirmId, setConfirmId] = useState(null)
+
+  // Decisions are irreversible in team play, so a single stray click must not
+  // be able to spend a round. First click arms, second commits.
+  function handleApply(option) {
+    if (!requireConfirm) {
+      onSelectOption(option)
+      return
+    }
+    if (confirmId === option.id) {
+      setConfirmId(null)
+      onSelectOption(option)
+    } else {
+      setConfirmId(option.id)
+    }
+  }
 
   return (
     <div className="option-cards">
@@ -107,8 +134,10 @@ export default function OptionCards({
           isPreviewed={previewOption?.id === option.id}
           isBest={isLocked && option.id === bestOptionId}
           isLocked={isLocked}
+          isExpired={isExpired}
+          isConfirming={confirmId === option.id}
           showBest={showBest}
-          onSelectOption={onSelectOption}
+          onApply={handleApply}
           onPreviewOption={onPreviewOption}
         />
       ))}

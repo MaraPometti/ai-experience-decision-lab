@@ -777,47 +777,47 @@
             0,
             0,
             0,
-            11,
-            4,
-            1
+            16,
+            3,
+            -4
           ],
           "scoreImpact": {
-            "cei": 6,
-            "trust": -3,
+            "cei": 7,
+            "trust": -8,
             "cost": -4,
-            "retention": 2
+            "retention": -3
           },
           "kpiRationale": {
-            "revenue": "Strong initial product conversion from precise recommendations.",
+            "revenue": "Highest immediate revenue in the round — unconstrained inference produces the most precise recommendations and the strongest short-term conversion.",
             "trust": "Customers feel surveilled when they discover the depth of data inference.",
             "cost": "Expensive — third-party data, complex inference, plus compliance remediation.",
-            "retention": "Short-term positive, long-term negative as trust erodes.",
-            "cei": "Good engagement initially but the trust damage limits deepening."
+            "retention": "Net negative: an initial lift, then accelerating attrition once customers understand the depth of profiling.",
+            "cei": "Strong initial engagement, but the trust damage reverses it — Loyalty-stage value ends below where the round started."
           },
           "businessImpact": {
             "aiSpend": 1600000,
             "budgetDelta": -1600000,
-            "revenueLiftPct": 0.8,
-            "revenueDelta": 2000000,
-            "customerValueDelta": 4,
-            "ceiDelta": 6,
-            "trustDelta": -3,
-            "adoptionDelta": 4,
-            "retentionDelta": 2
+            "revenueLiftPct": 2.16,
+            "revenueDelta": 5400000,
+            "customerValueDelta": 5,
+            "ceiDelta": 7,
+            "trustDelta": -8,
+            "adoptionDelta": 1,
+            "retentionDelta": -3
           },
           "tradeoffProfile": {
             "experience": "high",
-            "economics": "weak",
+            "economics": "strong",
             "trust": "negative",
-            "adoption": "moderate"
+            "adoption": "low"
           },
           "insightExperience": "The AI recommended exactly the right product at exactly the right moment. But when the customer asked how the bank knew she was planning to expand, no one could clearly explain what data was used or how the inference was made. The recommendation was accurate. The feeling was surveillance.",
           "insightCostDrivers": "Expensive to build and run — accessing and processing third-party data, behavioural inference, and unconstrained context adds significant infrastructure and compliance remediation cost when regulators ask questions.",
-          "insightRevenue": "Strong initial conversion on product recommendations. But trust erosion from opaque data use reduces the customer's willingness to act on future recommendations — and creates regulatory exposure that could cost more than the revenue generated.",
+          "insightRevenue": "The highest short-term revenue of any option in this round: the recommendations land because the AI knows everything. But trust erosion from opaque data use reduces willingness to act on future recommendations, and the regulatory exposure it creates can cost more than the revenue it generated. This is the round where the most profitable choice and the right choice are not the same.",
           "compareSummary": {
             "strongerThan": "B",
             "weakerThan": "C",
-            "reason": "Best recommendation accuracy but creates trust and compliance exposure that undermines the relationship — the customer didn't consent to this depth of data inference."
+            "reason": "Highest immediate revenue and the best recommendation accuracy — but it creates trust and compliance exposure that undermines the relationship. The customer did not consent to this depth of data inference, and the value decays through Loyalty."
           },
           "explanation": "Hyper-personalisation without governance is the most common expansion mistake. The AI's recommendation quality is high — it genuinely knows what the customer needs. But the customer doesn't know what the AI knows about them, how it made the inference, or what data it accessed. When customers discover the depth of profiling — and they eventually do — the trust impact is severe. Regulatory exposure compounds: without audit trails and governance layers, the bank cannot demonstrate compliance with data protection requirements. The recommendation was right. The architecture was wrong."
         },
@@ -887,27 +887,27 @@
           ],
           "scoreImpact": {
             "cei": 11,
-            "trust": 4,
-            "cost": 0,
-            "retention": 4
+            "trust": 7,
+            "cost": -2,
+            "retention": 5
           },
           "kpiRationale": {
-            "revenue": "Highest conversion — recommendations match real needs and transparent reasoning drives action.",
+            "revenue": "Slightly below Option A inside the pilot window, but the revenue is durable — transparent reasoning sustains willingness to act instead of exhausting it.",
             "trust": "Customers who see how the AI uses their data trust it more, not less.",
-            "cost": "Moderate — compliance infrastructure is an investment in sustainable personalisation.",
+            "cost": "The most expensive option in the round — audit logging, consent management and explainability are a real investment, not a formality.",
             "retention": "Customers who receive relevant, transparent recommendations deepen their relationship.",
             "cei": "Highest expansion value — personalisation plus governance creates the deepest customer engagement."
           },
           "businessImpact": {
-            "aiSpend": 1200000,
-            "budgetDelta": -1200000,
-            "revenueLiftPct": 2,
-            "revenueDelta": 5000000,
+            "aiSpend": 1700000,
+            "budgetDelta": -1700000,
+            "revenueLiftPct": 1.64,
+            "revenueDelta": 4100000,
             "customerValueDelta": 9,
             "ceiDelta": 11,
-            "trustDelta": 4,
+            "trustDelta": 7,
             "adoptionDelta": 6,
-            "retentionDelta": 4
+            "retentionDelta": 5
           },
           "tradeoffProfile": {
             "experience": "high",
@@ -916,8 +916,8 @@
             "adoption": "high"
           },
           "insightExperience": "The AI recommended a working capital extension based on the customer's actual cash flow pattern and growth trajectory. It showed exactly what data it used and why it made the recommendation. The customer could see the reasoning, which made her more likely to act on it — and to trust the next recommendation.",
-          "insightCostDrivers": "Moderate build cost (£1.2M) includes the compliance infrastructure: audit logging, consent management, explainability layer, and governance rules. This is an investment in sustainable personalisation — the compliance layer protects the bank from regulatory exposure while enabling the depth of context that makes recommendations genuinely useful.",
-          "insightRevenue": "Highest product conversion because recommendations match actual customer needs at the right moment. Transparent reasoning increases willingness to act. Compliance layer protects the revenue stream from regulatory disruption. The combination drives both immediate cross-sell and long-term relationship deepening.",
+          "insightCostDrivers": "The round's highest build cost (£1.7M), because the compliance infrastructure is real: audit logging, consent management, an explainability layer, and governance rules. This is an investment in sustainable personalisation — the compliance layer protects the bank from regulatory exposure while enabling the depth of context that makes recommendations genuinely useful. It costs more than Option A precisely because it does the part Option A skips.",
+          "insightRevenue": "Slightly lower immediate conversion than ungoverned personalisation, but the revenue compounds instead of decaying. Recommendations match actual customer needs at the right moment, and transparent reasoning increases willingness to act again. The compliance layer protects the revenue stream from regulatory disruption. Option A wins the quarter; this wins the relationship.",
           "compareSummary": {
             "strongerThan": "A",
             "weakerThan": null,
@@ -1161,7 +1161,7 @@
           "insightCostDrivers": "At £600K in AI modelling cost plus commercial team resource for structuring a novel franchise finance product, the bank is investing in a capability it doesn't currently have for customers who didn't ask for it. The highest-ceiling outcomes require SME customers like Aisha to say yes to a relationship change they may not want at this stage of their business.",
           "insightRevenue": "The proposal generates significant analysis and commercial team cost. If the customer accepts, the upside is substantial. If they decline — which is more likely when an unsolicited co-investment proposal arrives at a moment of growth — the bank has invested in an offer that complicated the relationship and generated no revenue.",
           "compareSummary": {
-            "strongerThan": "B",
+            "strongerThan": null,
             "weakerThan": "A",
             "reason": "Bold, well-intentioned — but the co-investment proposal introduces a relationship dynamic SME customers like Aisha didn't request at the moment they most value the bank's intelligence, not its commercial ambitions."
           },

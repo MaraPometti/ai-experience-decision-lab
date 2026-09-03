@@ -4,16 +4,15 @@ import {
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
 } from 'recharts'
 
 const COLOR = {
-  baseline: '#9ca3af',
-  live:     '#2563eb',
-  best:     '#16a34a',
-  preview:  '#f59e0b',
+  baseline: '#adbac7',
+  live: '#7ad3ff',
+  best: '#87edb4',
+  preview: '#ffd166',
 }
 
 export default function ValueChart({
@@ -46,11 +45,11 @@ export default function ValueChart({
     <div className="value-chart">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 16, right: 24, left: 16, bottom: 8 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-
           <XAxis
             dataKey="stage"
-            tick={{ fontSize: 12, fill: '#374151' }}
+            tick={{ fontSize: 12, fill: '#a9c7d8' }}
+            axisLine={{ stroke: 'rgba(162, 193, 206, 0.28)' }}
+            tickLine={{ stroke: 'rgba(162, 193, 206, 0.28)' }}
           />
 
           <YAxis
@@ -59,21 +58,32 @@ export default function ValueChart({
               angle: -90,
               position: 'insideLeft',
               offset: 10,
-              style: { fontSize: 11, fill: '#6b7280' },
+              style: { fontSize: 11, fill: '#a9c7d8' },
             }}
-            tick={{ fontSize: 12, fill: '#374151' }}
-            domain={[0, 100]}
+            tick={{ fontSize: 12, fill: '#a9c7d8' }}
+            // Normally pinned to 0–100 so every team's chart is comparable, but a
+            // run can genuinely destroy value at Loyalty (the floor is −6). A fixed
+            // domain silently clipped that to zero and misreported the outcome.
+            domain={[dataMin => (dataMin < 0 ? Math.floor(dataMin / 10) * 10 : 0), 100]}
             width={80}
+            axisLine={{ stroke: 'rgba(162, 193, 206, 0.28)' }}
+            tickLine={{ stroke: 'rgba(162, 193, 206, 0.28)' }}
           />
 
           <Tooltip
-            contentStyle={{ fontSize: 13 }}
-            labelStyle={{ fontWeight: 600 }}
+            contentStyle={{
+              fontSize: 13,
+              background: 'rgba(7, 18, 25, 0.96)',
+              border: '1px solid rgba(126, 239, 255, 0.2)',
+              borderRadius: 12,
+              color: '#ebfaff',
+            }}
+            labelStyle={{ fontWeight: 600, color: '#ebfaff' }}
           />
 
           <Legend
             payload={legendPayload}
-            wrapperStyle={{ fontSize: 13, paddingTop: 8 }}
+            wrapperStyle={{ fontSize: 13, paddingTop: 8, color: '#d9edf7' }}
           />
 
           <Line
